@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Send, Bot, User, Plus } from 'lucide-react';
+import { Send, Bot, User, Plus, Edit, Trash2 } from 'lucide-react';
 import { ChatMessage, Widget, WidgetAction } from '../types';
 import { useDashboard } from '../context/DashboardContext';
 
@@ -8,7 +8,7 @@ const ChatInterface: React.FC = () => {
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       id: '1',
-      message: 'Hello! I\'m your investment assistant. I can help you with portfolio insights, performance analysis, and answer questions about your investments. I can also add new widgets to your dashboard - just ask me to add widgets like "market trends", "risk analysis", or "cash flow"!',
+      message: 'Hello! I\'m your investment assistant. I can help you with portfolio insights, performance analysis, and manage your dashboard widgets. I can:\n\n• Add widgets: "show me market trends" or "add risk analysis"\n• Edit widgets: "change performance chart to 3 months"\n• Remove widgets: "remove the cash flow widget"\n• Answer investment questions about your portfolio\n\nWhat would you like to explore today?',
       sender: 'assistant',
       timestamp: new Date(),
     }
@@ -132,42 +132,199 @@ const ChatInterface: React.FC = () => {
     return widgetTemplates[type] || widgetTemplates['portfolio-overview'];
   };
 
-  const simulateAssistantResponse = (userMessage: string): { message: string; widgetAction?: WidgetAction } => {
-    const message = userMessage.toLowerCase();
-    
-    // Widget creation patterns
-    if (message.includes('add') && (message.includes('widget') || message.includes('chart') || message.includes('overview'))) {
-      let widgetType: Widget['type'] | null = null;
-      let widgetName = '';
-      
-      if (message.includes('market') || message.includes('trend')) {
-        widgetType = 'market-trends';
-        widgetName = 'Market Trends';
-      } else if (message.includes('risk')) {
-        widgetType = 'risk-analysis';
-        widgetName = 'Risk Analysis';
-      } else if (message.includes('cash') || message.includes('flow')) {
-        widgetType = 'cash-flow';
-        widgetName = 'Cash Flow';
-      } else if (message.includes('news')) {
-        widgetType = 'news-feed';
-        widgetName = 'Market News';
-      } else if (message.includes('performance')) {
-        widgetType = 'performance-chart';
-        widgetName = 'Performance Chart';
-      } else if (message.includes('allocation')) {
-        widgetType = 'asset-allocation';
-        widgetName = 'Asset Allocation';
-      } else if (message.includes('transaction')) {
-        widgetType = 'recent-transactions';
-        widgetName = 'Recent Transactions';
-      } else {
-        widgetType = 'portfolio-overview';
-        widgetName = 'Portfolio Overview';
+  const detectWidgetIntent = (message: string): { type: Widget['type']; confidence: number } | null => {
+    const msg = message.toLowerCase();
+    const patterns = {
+      'portfolio-overview': [
+        'portfolio', 'overview', 'total value', 'total return', 'summary',
+        'dashboard overview', 'investment summary', 'portfolio summary'
+      ],
+      'performance-chart': [
+        'performance', 'chart', 'graph', 'growth', 'trend chart', 'performance graph',
+        'historical performance', 'time series', 'portfolio performance'
+      ],
+      'asset-allocation': [
+        'allocation', 'asset', 'diversification', 'breakdown', 'distribution',
+        'asset breakdown', 'investment allocation', 'portfolio allocation'
+      ],
+      'recent-transactions': [
+        'transaction', 'capital call', 'distribution', 'recent activity',
+        'fund activity', 'investment activity', 'cash movements'
+      ],
+      'market-trends': [
+        'market', 'trends', 'sector', 'industry', 'market performance',
+        'sector trends', 'industry performance', 'market analysis'
+      ],
+      'risk-analysis': [
+        'risk', 'volatility', 'beta', 'sharpe', 'analysis', 'risk metrics',
+        'portfolio risk', 'risk assessment', 'risk profile'
+      ],
+      'cash-flow': [
+        'cash flow', 'cash', 'inflow', 'outflow', 'liquidity',
+        'cash position', 'cash movements', 'fund flows'
+      ],
+      'news-feed': [
+        'news', 'updates', 'market news', 'financial news', 'headlines',
+        'market updates', 'investment news', 'latest news'
+      ]
+    };
+
+    let bestMatch: { type: Widget['type']; score: number } | null = null;
+
+    for (const [widgetType, keywords] of Object.entries(patterns)) {
+      let score = 0;
+      for (const keyword of keywords) {
+        if (msg.includes(keyword)) {
+          score += keyword.split(' ').length; // Multi-word matches get higher scores
+        }
       }
       
+      if (score > 0 && (!bestMatch || score > bestMatch.score)) {
+        bestMatch = { type: widgetType as Widget['type'], score };
+      }
+    }
+
+    return bestMatch ? { type: bestMatch.type, confidence: Math.min(bestMatch.score * 0.2, 1) } : null;
+  };
+
+  const detectAction = (message: string): 'add' | 'update' | 'remove' | 'info' => {
+    const msg = message.toLowerCase();
+    
+    // Action keywords with priorities
+    const actionPatterns = {
+      add: ['add', 'create', 'show me', 'display', 'i want', 'i need', 'get me', 'bring up'],
+      update: ['change', 'update', 'modify', 'edit', 'adjust', 'switch', 'make it', 'set to'],
+      remove: ['remove', 'delete', 'hide', 'get rid of', 'take away'],
+      info: ['what', 'how', 'tell me', 'explain', 'describe', 'status']
+    };
+
+    let bestAction: { action: string; score: number } = { action: 'info', score: 0 };
+
+    for (const [action, patterns] of Object.entries(actionPatterns)) {
+      for (const pattern of patterns) {
+        if (msg.includes(pattern)) {
+          const score = pattern.split(' ').length;
+          if (score > bestAction.score) {
+            bestAction = { action, score };
+          }
+        }
+      }
+    }
+
+    return bestAction.action as 'add' | 'update' | 'remove' | 'info';
+  };
+
+  const findTargetWidget = (message: string): Widget | null => {
+    const msg = message.toLowerCase();
+    return widgets.find(widget => {
+      const titleLower = widget.title.toLowerCase();
+      return msg.includes(titleLower) || 
+             msg.includes(widget.type.replace('-', ' ')) ||
+             (widget.type === 'performance-chart' && msg.includes('performance')) ||
+             (widget.type === 'asset-allocation' && msg.includes('allocation')) ||
+             (widget.type === 'recent-transactions' && msg.includes('transaction')) ||
+             (widget.type === 'market-trends' && msg.includes('market')) ||
+             (widget.type === 'risk-analysis' && msg.includes('risk')) ||
+             (widget.type === 'cash-flow' && msg.includes('cash')) ||
+             (widget.type === 'news-feed' && msg.includes('news'));
+    }) || null;
+  };
+
+  const simulateAssistantResponse = (userMessage: string): { message: string; widgetAction?: WidgetAction } => {
+    const message = userMessage.toLowerCase();
+    const action = detectAction(message);
+    const widgetIntent = detectWidgetIntent(message);
+    const targetWidget = findTargetWidget(message);
+
+    // Handle widget updates/edits
+    if (action === 'update' && targetWidget) {
+      // Performance chart editing
+      if (targetWidget.type === 'performance-chart') {
+        const monthMatch = message.match(/(\d+)[- ]?month/);
+        if (monthMatch) {
+          const months = parseInt(monthMatch[1]);
+          const newData = {
+            chartData: Array.from({ length: months }, (_, i) => ({
+              month: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][i] || `M${i+1}`,
+              value: 2200000 + (i * 50000) + (Math.random() * 100000)
+            }))
+          };
+          
+          return {
+            message: `I've updated the Performance Chart to show ${months}-month trend data. The chart now displays ${months} months of portfolio performance history.`,
+            widgetAction: {
+              type: 'update',
+              widgetId: targetWidget.id,
+              widgetData: { data: newData },
+              updateType: 'data'
+            }
+          };
+        }
+      }
+
+      // Risk analysis updates
+      if (targetWidget.type === 'risk-analysis' && (message.includes('conservative') || message.includes('aggressive'))) {
+        const isConservative = message.includes('conservative');
+        const newData = {
+          riskMetrics: [
+            { metric: 'Portfolio Beta', value: isConservative ? 0.65 : 1.25, status: isConservative ? 'low' : 'high' },
+            { metric: 'Sharpe Ratio', value: isConservative ? 1.8 : 0.9, status: isConservative ? 'good' : 'moderate' },
+            { metric: 'Max Drawdown', value: isConservative ? -4.2 : -15.8, status: isConservative ? 'low' : 'high' },
+            { metric: 'Volatility', value: isConservative ? 8.1 : 18.7, status: isConservative ? 'low' : 'high' },
+          ]
+        };
+        
+        return {
+          message: `I've updated the Risk Analysis to reflect a ${isConservative ? 'conservative' : 'aggressive'} risk profile. The metrics now show ${isConservative ? 'lower risk parameters' : 'higher risk tolerance'}.`,
+          widgetAction: {
+            type: 'update',
+            widgetId: targetWidget.id,
+            widgetData: { data: newData },
+            updateType: 'data'
+          }
+        };
+      }
+
       return {
-        message: `I've added a ${widgetName} widget to your dashboard! You can now see this information displayed and can drag it to reposition or resize it as needed. The widget has been placed in an optimal location on your dashboard.`,
+        message: `I understand you want to update the ${targetWidget.title}. Could you be more specific about what you'd like to change? For example, for the Performance Chart, you can ask me to change it to show a different number of months.`
+      };
+    }
+
+    // Handle widget removal
+    if (action === 'remove' && targetWidget) {
+      return {
+        message: `I've removed the ${targetWidget.title} widget from your dashboard. You can always add it back using the "Add Widget" button or by asking me to add it again.`,
+        widgetAction: {
+          type: 'remove',
+          widgetId: targetWidget.id
+        }
+      };
+    }
+
+    // Handle widget addition - much more flexible patterns
+    if ((action === 'add' || message.includes('show me') || message.includes('i want') || message.includes('display')) && widgetIntent) {
+      const widgetType = widgetIntent.type;
+      const widgetNames = {
+        'portfolio-overview': 'Portfolio Overview',
+        'performance-chart': 'Performance Chart', 
+        'asset-allocation': 'Asset Allocation',
+        'recent-transactions': 'Recent Transactions',
+        'market-trends': 'Market Trends',
+        'risk-analysis': 'Risk Analysis',
+        'cash-flow': 'Cash Flow',
+        'news-feed': 'Market News'
+      };
+
+      // Check if widget already exists
+      const exists = widgets.some(w => w.type === widgetType);
+      if (exists) {
+        return {
+          message: `The ${widgetNames[widgetType]} widget is already on your dashboard. Would you like me to update it instead, or help you with something else?`
+        };
+      }
+
+      return {
+        message: `I've added a ${widgetNames[widgetType]} widget to your dashboard! You can now see this information displayed and can drag it to reposition or resize it as needed.`,
         widgetAction: {
           type: 'add',
           widgetType,
@@ -175,48 +332,40 @@ const ChatInterface: React.FC = () => {
         }
       };
     }
-    
-    // Remove widget patterns
-    if (message.includes('remove') || message.includes('delete')) {
+
+    // Informational responses with widget suggestions
+    if (widgetIntent && !widgets.some(w => w.type === widgetIntent.type)) {
+      const widgetNames = {
+        'portfolio-overview': 'Portfolio Overview',
+        'performance-chart': 'Performance Chart', 
+        'asset-allocation': 'Asset Allocation',
+        'recent-transactions': 'Recent Transactions',
+        'market-trends': 'Market Trends',
+        'risk-analysis': 'Risk Analysis',
+        'cash-flow': 'Cash Flow',
+        'news-feed': 'Market News'
+      };
+
+      const responses = {
+        'portfolio-overview': 'Your total portfolio value is $2.5M with a 15.8% total return and 2.3% monthly growth. Your investments are well-diversified across multiple asset classes.',
+        'performance-chart': 'Your portfolio has shown strong performance over the past 5 months, with steady growth from $2.2M to $2.5M. The trend indicates consistent positive returns.',
+        'asset-allocation': 'Your portfolio is allocated across Private Equity (40%), Real Estate (30%), Venture Capital (20%), and Hedge Funds (10%). This shows good diversification.',
+        'recent-transactions': 'Recent activity includes a $75,000 distribution from Real Estate Fund II and capital calls totaling $75,000 from Tech Growth Fund III and Healthcare Fund I.',
+        'market-trends': 'Current market trends show Technology (+12.5%) and Healthcare (+8.3%) performing strongly, while Real Estate remains stable (+2.1%) and Energy is down (-3.2%).',
+        'risk-analysis': 'Your portfolio shows moderate risk with a Beta of 0.85, Sharpe Ratio of 1.42, and 12.1% volatility. The risk profile indicates good risk-adjusted returns.',
+        'cash-flow': 'Your cash flow has been positive with $80,000 net inflows over the past quarter. January showed $25,000 net inflow, with some outflow in February due to capital calls.',
+        'news-feed': 'Latest investment news includes updates on Private Equity market outlook, Real Estate investment trends, and VC funding reaching new highs.'
+      };
+
       return {
-        message: 'To remove a widget, you can tell me which specific widget you\'d like to remove (e.g., "remove the performance chart" or "delete the risk analysis widget"). Alternatively, you can enable customization mode and manually remove widgets from the dashboard.'
+        message: `${responses[widgetIntent.type]} Would you like me to add a ${widgetNames[widgetIntent.type]} widget to your dashboard for better visualization?`
       };
     }
-    
-    // Information responses
-    if (message.includes('portfolio') || message.includes('performance')) {
-      return {
-        message: 'Based on your current portfolio, you have a total value of $2.5M with a 15.8% total return. Your portfolio is well-diversified across Private Equity (40%), Real Estate (30%), Venture Capital (20%), and Hedge Funds (10%). Would you like me to add a performance chart widget to better visualize this data?'
-      };
-    } else if (message.includes('allocation') || message.includes('diversification')) {
-      return {
-        message: 'Your current asset allocation shows a balanced approach with Private Equity as your largest holding at 40%. This allocation aligns well with typical LP strategies for long-term growth. Would you like me to add an asset allocation widget to better visualize this data?'
-      };
-    } else if (message.includes('transaction') || message.includes('capital call') || message.includes('distribution')) {
-      return {
-        message: 'Your recent transactions show a healthy mix of capital calls and distributions. You received a $75,000 distribution from Real Estate Fund II and had capital calls totaling $75,000. Would you like me to add a transactions widget to your dashboard for better tracking?'
-      };
-    } else if (message.includes('risk') || message.includes('volatility')) {
-      return {
-        message: 'Your portfolio shows moderate risk with good diversification across asset classes. The 2.3% monthly change indicates healthy growth with manageable volatility. Your Private Equity and Real Estate holdings provide stability, while VC investments add growth potential. Would you like me to add a risk analysis widget?'
-      };
-    } else if (message.includes('market') || message.includes('trends')) {
-      return {
-        message: 'Current market trends show Technology and Healthcare sectors performing strongly with 12.5% and 8.3% growth respectively. Real Estate remains stable at 2.1% while Energy is down 3.2%. Would you like me to add a market trends widget to track these changes?'
-      };
-    } else if (message.includes('cash') || message.includes('flow')) {
-      return {
-        message: 'Your cash flow has been positive overall with net inflows of $80,000 over the past quarter. January saw the highest net inflow at $25,000, while February had a temporary outflow of -$30,000 due to capital calls. Would you like me to add a cash flow widget to monitor this better?'
-      };
-    } else if (message.includes('widget') || message.includes('dashboard')) {
-      return {
-        message: 'I can help you customize your dashboard! Available widgets include: Portfolio Overview, Performance Chart, Asset Allocation, Recent Transactions, Market Trends, Risk Analysis, Cash Flow, and Market News. Just ask me to "add [widget name]" and I\'ll add it to your dashboard!'
-      };
-    } else {
-      return {
-        message: 'I\'d be happy to help you with that! I can provide insights about your portfolio performance, asset allocation, recent transactions, market trends, risk analysis, or cash flow. I can also add new widgets to your dashboard - just ask me to add any widget you\'d like to see!'
-      };
-    }
+
+    // Default helpful response
+    return {
+      message: 'I can help you with portfolio information, add widgets to your dashboard, or modify existing widgets. Try asking me to "add a performance chart", "show me market trends", "change the performance chart to 3 months", or "remove the risk analysis widget".'
+    };
   };
 
   const handleSendMessage = async () => {
@@ -239,7 +388,7 @@ const ChatInterface: React.FC = () => {
       
       // Execute widget action if present
       if (response.widgetAction) {
-        const { type, widgetType, widgetData } = response.widgetAction;
+        const { type, widgetType, widgetId, widgetData } = response.widgetAction;
         
         if (type === 'add' && widgetType && widgetData) {
           const newWidget = {
@@ -252,6 +401,10 @@ const ChatInterface: React.FC = () => {
             data: widgetData.data
           };
           addWidget(newWidget);
+        } else if (type === 'update' && widgetId && widgetData) {
+          updateWidget(widgetId, widgetData);
+        } else if (type === 'remove' && widgetId) {
+          removeWidget(widgetId);
         }
       }
       
@@ -301,10 +454,30 @@ const ChatInterface: React.FC = () => {
               {message.widgetAction && message.sender === 'assistant' && (
                 <div className="mt-2 pt-2 border-t border-gray-200">
                   <div className="flex items-center space-x-1 text-xs">
-                    <Plus className="w-3 h-3 text-green-600" />
-                    <span className="text-green-600 font-medium">
-                      Widget {message.widgetAction.type}ed to dashboard
-                    </span>
+                    {message.widgetAction.type === 'add' && (
+                      <>
+                        <Plus className="w-3 h-3 text-green-600" />
+                        <span className="text-green-600 font-medium">
+                          Widget added to dashboard
+                        </span>
+                      </>
+                    )}
+                    {message.widgetAction.type === 'update' && (
+                      <>
+                        <Edit className="w-3 h-3 text-blue-600" />
+                        <span className="text-blue-600 font-medium">
+                          Widget updated on dashboard
+                        </span>
+                      </>
+                    )}
+                    {message.widgetAction.type === 'remove' && (
+                      <>
+                        <Trash2 className="w-3 h-3 text-red-600" />
+                        <span className="text-red-600 font-medium">
+                          Widget removed from dashboard
+                        </span>
+                      </>
+                    )}
                   </div>
                 </div>
               )}

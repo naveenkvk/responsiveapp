@@ -22,6 +22,7 @@ export interface WidgetAction {
   widgetType?: Widget['type'];
   widgetId?: string;
   widgetData?: Partial<Widget>;
+  updateType?: 'data' | 'title' | 'size';
 }
 
 export interface DashboardLayout {

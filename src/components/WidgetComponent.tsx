@@ -251,8 +251,13 @@ const WidgetComponent: React.FC<WidgetComponentProps> = ({ widget, isCustomizing
     <div className="h-full p-2 sm:p-4 bg-white rounded-lg relative">
       {isCustomizing && (
         <button
-          onClick={() => removeWidget(widget.id)}
-          className="absolute top-2 right-2 p-1 bg-red-100 hover:bg-red-200 text-red-600 rounded-full transition-colors z-10"
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            removeWidget(widget.id);
+          }}
+          onMouseDown={(e) => e.stopPropagation()}
+          className="absolute top-2 right-2 p-1 bg-red-100 hover:bg-red-200 text-red-600 rounded-full transition-colors z-10 shadow-sm"
           title="Remove widget"
         >
           <X className="w-3 h-3" />
