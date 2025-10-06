@@ -1,12 +1,15 @@
 import React from 'react';
 import { Widget } from '../types';
-import { TrendingUp, TrendingDown, DollarSign, BarChart3, PieChart, Clock, Newspaper, AlertTriangle, Activity } from 'lucide-react';
+import { TrendingUp, TrendingDown, DollarSign, BarChart3, PieChart, Clock, Newspaper, AlertTriangle, Activity, X } from 'lucide-react';
+import { useDashboard } from '../context/DashboardContext';
 
 interface WidgetComponentProps {
   widget: Widget;
+  isCustomizing?: boolean;
 }
 
-const WidgetComponent: React.FC<WidgetComponentProps> = ({ widget }) => {
+const WidgetComponent: React.FC<WidgetComponentProps> = ({ widget, isCustomizing = false }) => {
+  const { removeWidget } = useDashboard();
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
@@ -245,12 +248,21 @@ const WidgetComponent: React.FC<WidgetComponentProps> = ({ widget }) => {
   };
 
   return (
-    <div className="h-full p-2 sm:p-4 bg-white rounded-lg">
+    <div className="h-full p-2 sm:p-4 bg-white rounded-lg relative">
+      {isCustomizing && (
+        <button
+          onClick={() => removeWidget(widget.id)}
+          className="absolute top-2 right-2 p-1 bg-red-100 hover:bg-red-200 text-red-600 rounded-full transition-colors z-10"
+          title="Remove widget"
+        >
+          <X className="w-3 h-3" />
+        </button>
+      )}
       <div className="flex items-center space-x-2 mb-2 sm:mb-4">
         <div className="text-primary-600">
           {getIcon()}
         </div>
-        <h3 className="text-sm sm:text-lg font-semibold text-gray-900 truncate">{widget.title}</h3>
+        <h3 className="text-sm sm:text-lg font-semibold text-gray-900 truncate pr-6">{widget.title}</h3>
       </div>
       <div className="h-full overflow-auto">
         {renderContent()}

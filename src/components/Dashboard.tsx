@@ -2,6 +2,7 @@ import React, { useState, useCallback } from 'react';
 import GridLayout from 'react-grid-layout';
 import { Widget } from '../types';
 import WidgetComponent from './WidgetComponent';
+import AddWidgetModal from './AddWidgetModal';
 import { Plus, Settings } from 'lucide-react';
 import { useDashboard } from '../context/DashboardContext';
 import 'react-grid-layout/css/styles.css';
@@ -11,6 +12,7 @@ const Dashboard: React.FC = () => {
   const { widgets, updateWidget } = useDashboard();
 
   const [isCustomizing, setIsCustomizing] = useState(false);
+  const [isAddWidgetModalOpen, setIsAddWidgetModalOpen] = useState(false);
 
   const onLayoutChange = useCallback((layout: any[]) => {
     if (!isCustomizing) return;
@@ -53,7 +55,10 @@ const Dashboard: React.FC = () => {
             <span className="hidden sm:inline">{isCustomizing ? 'Done Customizing' : 'Customize Layout'}</span>
             <span className="sm:hidden">{isCustomizing ? 'Done' : 'Customize'}</span>
           </button>
-          <button className="flex items-center justify-center space-x-2 px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors">
+          <button 
+            onClick={() => setIsAddWidgetModalOpen(true)}
+            className="flex items-center justify-center space-x-2 px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors"
+          >
             <Plus className="w-4 h-4" />
             <span>Add Widget</span>
           </button>
@@ -90,11 +95,17 @@ const Dashboard: React.FC = () => {
         >
           {widgets.map(widget => (
             <div key={widget.id} className="bg-gray-50 rounded-lg border border-gray-200">
-              <WidgetComponent widget={widget} />
+              <WidgetComponent widget={widget} isCustomizing={isCustomizing} />
             </div>
           ))}
         </GridLayout>
       </div>
+
+      {/* Add Widget Modal */}
+      <AddWidgetModal
+        isOpen={isAddWidgetModalOpen}
+        onClose={() => setIsAddWidgetModalOpen(false)}
+      />
     </div>
   );
 };
