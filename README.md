@@ -1,46 +1,115 @@
-# Getting Started with Create React App
+# LP Investment Portal
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A responsive web application designed for Limited Partners (LPs) to manage and track their private investment portfolios.
 
-## Available Scripts
+## Features
 
-In the project directory, you can run:
+### 🎛️ Customizable Dashboard
+- **Drag & Drop Interface**: Reposition widgets by enabling customization mode
+- **Resizable Widgets**: Adjust widget sizes using corner handles
+- **Real-time Layout Updates**: Changes are reflected immediately
 
-### `npm start`
+### 📊 Investment Widgets
+- **Portfolio Overview**: Total value, returns, and monthly performance
+- **Performance Chart**: Visual representation of portfolio growth over time
+- **Asset Allocation**: Breakdown by investment categories (PE, Real Estate, VC, Hedge Funds)
+- **Recent Transactions**: Capital calls, distributions, and other activities
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+### 💬 AI Investment Assistant
+- **Interactive Chat**: Ask questions about your portfolio
+- **Smart Responses**: Get insights about performance, allocation, and transactions
+- **Widget Suggestions**: Assistant can recommend adding specific widgets based on queries
+- **Mobile Optimized**: Responsive chat interface for all devices
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+### 📱 Responsive Design
+- **Mobile First**: Optimized for smartphones and tablets
+- **Adaptive Layout**: Grid layout adjusts to different screen sizes
+- **Touch Friendly**: Large touch targets for mobile interaction
 
-### `npm test`
+## Technology Stack
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+- **React 18** with TypeScript for type safety
+- **Tailwind CSS** for responsive styling
+- **React Grid Layout** for drag-and-drop functionality
+- **Lucide React** for modern iconography
 
-### `npm run build`
+## Getting Started
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### Prerequisites
+- Node.js 16+ and npm
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+### Installation
+```bash
+npm install
+```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+### Development
+```bash
+npm start
+```
+Opens the app at [http://localhost:3000](http://localhost:3000)
 
-### `npm run eject`
+### Build for Production
+```bash
+npm run build
+```
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+## Usage Guide
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+### Dashboard Customization
+1. Click "Customize Layout" button
+2. Drag widgets to reposition them
+3. Use corner handles to resize widgets
+4. Click "Done Customizing" to save changes
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+### Using the Chat Assistant
+1. Click the message icon in the bottom-right corner
+2. Ask questions about your portfolio:
+   - "Show me my portfolio performance"
+   - "What's my asset allocation?"
+   - "Add a performance widget"
+3. The assistant will provide insights and suggest dashboard updates
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+### Widget Types
+- **Portfolio Overview**: Key metrics and summary
+- **Performance Chart**: Time-series visualization
+- **Asset Allocation**: Category breakdown with percentages
+- **Recent Transactions**: Latest capital calls and distributions
 
-## Learn More
+## Customization
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+The application is designed to be easily extensible:
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+### Adding New Widgets
+1. Define new widget types in `src/types/index.ts`
+2. Add rendering logic in `src/components/WidgetComponent.tsx`
+3. Include sample data in `src/components/Dashboard.tsx`
+
+### Styling
+- Colors and themes can be customized in `tailwind.config.js`
+- Component styles use Tailwind utility classes for consistency
+
+## Architecture
+
+```
+src/
+├── components/
+│   ├── Layout.tsx          # Main application layout
+│   ├── Dashboard.tsx       # Grid-based dashboard
+│   ├── WidgetComponent.tsx # Individual widget renderer
+│   └── ChatInterface.tsx   # AI assistant chat
+├── types/
+│   └── index.ts           # TypeScript type definitions
+└── App.tsx                # Main application component
+```
+
+## Browser Support
+
+- Chrome 90+
+- Firefox 88+
+- Safari 14+
+- Edge 90+
+
+## License
+
+Private Investment Portal - All rights reserved.
