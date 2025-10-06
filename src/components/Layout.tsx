@@ -2,34 +2,36 @@ import React, { useState } from 'react';
 import { MessageCircle, X, Maximize2, Minimize2 } from 'lucide-react';
 import Dashboard from './Dashboard';
 import ChatInterface from './ChatInterface';
+import { DashboardProvider } from '../context/DashboardContext';
 
 const Layout: React.FC = () => {
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [isChatExpanded, setIsChatExpanded] = useState(false);
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white shadow-sm border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center">
-              <h1 className="text-2xl font-bold text-gray-900">LP Investment Portal</h1>
-            </div>
-            <div className="flex items-center space-x-4">
-              <div className="flex items-center space-x-2">
-                <div className="w-8 h-8 bg-primary-500 rounded-full flex items-center justify-center">
-                  <span className="text-white text-sm font-medium">JD</span>
+    <DashboardProvider>
+      <div className="min-h-screen bg-gray-50">
+        <header className="bg-white shadow-sm border-b border-gray-200">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex justify-between items-center h-16">
+              <div className="flex items-center">
+                <h1 className="text-2xl font-bold text-gray-900">LP Investment Portal</h1>
+              </div>
+              <div className="flex items-center space-x-4">
+                <div className="flex items-center space-x-2">
+                  <div className="w-8 h-8 bg-primary-500 rounded-full flex items-center justify-center">
+                    <span className="text-white text-sm font-medium">JD</span>
+                  </div>
+                  <span className="text-gray-700 font-medium">John Doe</span>
                 </div>
-                <span className="text-gray-700 font-medium">John Doe</span>
               </div>
             </div>
           </div>
-        </div>
-      </header>
+        </header>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        <Dashboard />
-      </main>
+        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <Dashboard />
+        </main>
 
       {/* Chat Toggle Button */}
       <button
@@ -70,7 +72,8 @@ const Layout: React.FC = () => {
           </div>
         </div>
       )}
-    </div>
+      </div>
+    </DashboardProvider>
   );
 };
 

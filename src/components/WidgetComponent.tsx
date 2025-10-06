@@ -1,6 +1,6 @@
 import React from 'react';
 import { Widget } from '../types';
-import { TrendingUp, DollarSign, BarChart3, PieChart, Clock } from 'lucide-react';
+import { TrendingUp, TrendingDown, DollarSign, BarChart3, PieChart, Clock, Newspaper, AlertTriangle, Activity } from 'lucide-react';
 
 interface WidgetComponentProps {
   widget: Widget;
@@ -126,6 +126,92 @@ const WidgetComponent: React.FC<WidgetComponentProps> = ({ widget }) => {
           </div>
         );
 
+      case 'news-feed':
+        return (
+          <div className="space-y-3">
+            {widget.data?.news?.map((item: any, index: number) => (
+              <div key={index} className="p-3 bg-gray-50 rounded-lg">
+                <div className="text-sm font-medium text-gray-900 mb-1">{item.title}</div>
+                <div className="flex justify-between items-center">
+                  <span className="text-xs text-gray-600">{item.source}</span>
+                  <span className="text-xs text-gray-500">{item.date}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        );
+
+      case 'market-trends':
+        return (
+          <div className="space-y-3">
+            {widget.data?.trends?.map((trend: any, index: number) => (
+              <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                <div className="flex items-center space-x-3">
+                  <div className={`w-3 h-3 rounded-full ${
+                    trend.trend === 'up' ? 'bg-green-500' : 
+                    trend.trend === 'down' ? 'bg-red-500' : 'bg-gray-400'
+                  }`}></div>
+                  <span className="text-sm font-medium text-gray-900">{trend.sector}</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  {trend.trend === 'up' ? (
+                    <TrendingUp className="w-4 h-4 text-green-600" />
+                  ) : trend.trend === 'down' ? (
+                    <TrendingDown className="w-4 h-4 text-red-600" />
+                  ) : (
+                    <div className="w-4 h-4 bg-gray-400 rounded-full"></div>
+                  )}
+                  <span className={`text-sm font-semibold ${
+                    trend.trend === 'up' ? 'text-green-600' : 
+                    trend.trend === 'down' ? 'text-red-600' : 'text-gray-600'
+                  }`}>
+                    {trend.percentage > 0 ? '+' : ''}{trend.percentage}%
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        );
+
+      case 'risk-analysis':
+        return (
+          <div className="space-y-3">
+            {widget.data?.riskMetrics?.map((metric: any, index: number) => (
+              <div key={index} className="flex items-center justify-between">
+                <span className="text-sm font-medium text-gray-700">{metric.metric}</span>
+                <div className="flex items-center space-x-2">
+                  <span className="text-sm font-semibold text-gray-900">{metric.value}</span>
+                  <div className={`w-2 h-2 rounded-full ${
+                    metric.status === 'good' ? 'bg-green-500' : 
+                    metric.status === 'moderate' ? 'bg-yellow-500' : 'bg-red-500'
+                  }`}></div>
+                </div>
+              </div>
+            ))}
+          </div>
+        );
+
+      case 'cash-flow':
+        return (
+          <div className="space-y-3">
+            {widget.data?.cashFlow?.map((flow: any, index: number) => (
+              <div key={index} className="flex items-center justify-between p-2 bg-gray-50 rounded">
+                <span className="text-sm font-medium text-gray-700">{flow.month}</span>
+                <div className="text-right">
+                  <div className="text-xs text-gray-600">
+                    In: {formatCurrency(flow.inflow)} | Out: {formatCurrency(flow.outflow)}
+                  </div>
+                  <div className={`text-sm font-semibold ${
+                    flow.net >= 0 ? 'text-green-600' : 'text-red-600'
+                  }`}>
+                    Net: {flow.net >= 0 ? '+' : ''}{formatCurrency(flow.net)}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        );
+
       default:
         return (
           <div className="flex items-center justify-center h-full text-gray-500">
@@ -145,6 +231,14 @@ const WidgetComponent: React.FC<WidgetComponentProps> = ({ widget }) => {
         return <PieChart className="w-5 h-5" />;
       case 'recent-transactions':
         return <Clock className="w-5 h-5" />;
+      case 'news-feed':
+        return <Newspaper className="w-5 h-5" />;
+      case 'market-trends':
+        return <TrendingUp className="w-5 h-5" />;
+      case 'risk-analysis':
+        return <AlertTriangle className="w-5 h-5" />;
+      case 'cash-flow':
+        return <Activity className="w-5 h-5" />;
       default:
         return <BarChart3 className="w-5 h-5" />;
     }

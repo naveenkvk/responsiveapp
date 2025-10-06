@@ -3,99 +3,27 @@ import GridLayout from 'react-grid-layout';
 import { Widget } from '../types';
 import WidgetComponent from './WidgetComponent';
 import { Plus, Settings } from 'lucide-react';
+import { useDashboard } from '../context/DashboardContext';
 import 'react-grid-layout/css/styles.css';
 import 'react-resizable/css/styles.css';
 
 const Dashboard: React.FC = () => {
-  const [widgets, setWidgets] = useState<Widget[]>([
-    {
-      id: 'portfolio-1',
-      type: 'portfolio-overview',
-      title: 'Portfolio Overview',
-      x: 0,
-      y: 0,
-      w: 6,
-      h: 4,
-      data: {
-        totalValue: 2500000,
-        totalReturn: 15.8,
-        monthlyChange: 2.3
-      }
-    },
-    {
-      id: 'performance-1',
-      type: 'performance-chart',
-      title: 'Performance Chart',
-      x: 6,
-      y: 0,
-      w: 6,
-      h: 4,
-      data: {
-        chartData: [
-          { month: 'Jan', value: 2200000 },
-          { month: 'Feb', value: 2300000 },
-          { month: 'Mar', value: 2250000 },
-          { month: 'Apr', value: 2400000 },
-          { month: 'May', value: 2500000 },
-        ]
-      }
-    },
-    {
-      id: 'allocation-1',
-      type: 'asset-allocation',
-      title: 'Asset Allocation',
-      x: 0,
-      y: 4,
-      w: 4,
-      h: 3,
-      data: {
-        allocations: [
-          { category: 'Private Equity', percentage: 40, value: 1000000 },
-          { category: 'Real Estate', percentage: 30, value: 750000 },
-          { category: 'Venture Capital', percentage: 20, value: 500000 },
-          { category: 'Hedge Funds', percentage: 10, value: 250000 },
-        ]
-      }
-    },
-    {
-      id: 'transactions-1',
-      type: 'recent-transactions',
-      title: 'Recent Transactions',
-      x: 4,
-      y: 4,
-      w: 8,
-      h: 3,
-      data: {
-        transactions: [
-          { date: '2024-01-15', type: 'Capital Call', fund: 'Tech Growth Fund III', amount: -50000 },
-          { date: '2024-01-10', type: 'Distribution', fund: 'Real Estate Fund II', amount: 75000 },
-          { date: '2024-01-05', type: 'Capital Call', fund: 'Healthcare Fund I', amount: -25000 },
-        ]
-      }
-    }
-  ]);
+  const { widgets, updateWidget } = useDashboard();
 
   const [isCustomizing, setIsCustomizing] = useState(false);
 
   const onLayoutChange = useCallback((layout: any[]) => {
     if (!isCustomizing) return;
     
-    setWidgets(prevWidgets =>
-      prevWidgets.map(widget => {
-        const layoutItem = layout.find(item => item.i === widget.id);
-        if (layoutItem) {
-          return {
-            ...widget,
-            x: layoutItem.x,
-            y: layoutItem.y,
-            w: layoutItem.w,
-            h: layoutItem.h,
-          };
-        }
-        return widget;
-      })
-    );
-  }, [isCustomizing]);
+    layout.forEach(layoutItem => {
+      updateWidget(layoutItem.i, {
+        x: layoutItem.x,
+        y: layoutItem.y,
+        w: layoutItem.w,
+        h: layoutItem.h,
+      });
+    });
+  }, [isCustomizing, updateWidget]);
 
   const gridLayout = widgets.map(widget => ({
     i: widget.id,
