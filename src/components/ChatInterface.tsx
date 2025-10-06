@@ -16,6 +16,7 @@ const ChatInterface: React.FC = () => {
   const [inputMessage, setInputMessage] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const [lastSuggestedWidget, setLastSuggestedWidget] = useState<Widget['type'] | null>(null);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -230,8 +231,69 @@ const ChatInterface: React.FC = () => {
     }) || null;
   };
 
-  const simulateAssistantResponse = (userMessage: string): { message: string; widgetAction?: WidgetAction } => {
+  const detectFollowUpResponse = (message: string): 'yes' | 'no' | 'neutral' => {
+    const msg = message.toLowerCase().trim();
+    
+    const yesPatterns = ['yes', 'yeah', 'yep', 'sure', 'ok', 'okay', 'please', 'do it', 'go ahead', 'add it', 'that would be great', 'sounds good', 'perfect'];
+    const noPatterns = ['no', 'nah', 'nope', 'not now', 'maybe later', 'not really', 'no thanks', 'cancel'];
+    
+    if (yesPatterns.some(pattern => msg === pattern || msg.includes(pattern))) {
+      return 'yes';
+    }
+    
+    if (noPatterns.some(pattern => msg === pattern || msg.includes(pattern))) {
+      return 'no';
+    }
+    
+    return 'neutral';
+  };
+
+  const simulateAssistantResponse = (userMessage: string): { message: string; widgetAction?: WidgetAction; suggestedWidget?: Widget['type'] } => {
     const message = userMessage.toLowerCase();
+    const followUp = detectFollowUpResponse(userMessage);
+    
+    // Handle follow-up responses first
+    if (followUp === 'yes' && lastSuggestedWidget) {
+      // Check if widget already exists
+      const exists = widgets.some(w => w.type === lastSuggestedWidget);
+      if (exists) {
+        setLastSuggestedWidget(null);
+        return {
+          message: `The ${lastSuggestedWidget.replace('-', ' ')} widget is already on your dashboard. Is there anything else I can help you with?`
+        };
+      }
+
+      const widgetNames = {
+        'portfolio-overview': 'Portfolio Overview',
+        'performance-chart': 'Performance Chart', 
+        'asset-allocation': 'Asset Allocation',
+        'recent-transactions': 'Recent Transactions',
+        'market-trends': 'Market Trends',
+        'risk-analysis': 'Risk Analysis',
+        'cash-flow': 'Cash Flow',
+        'news-feed': 'Market News'
+      };
+
+      const widgetName = widgetNames[lastSuggestedWidget];
+      setLastSuggestedWidget(null);
+      
+      return {
+        message: `Perfect! I've added the ${widgetName} widget to your dashboard. You can now see detailed ${lastSuggestedWidget.replace('-', ' ')} information and customize its position by dragging it around.`,
+        widgetAction: {
+          type: 'add',
+          widgetType: lastSuggestedWidget,
+          widgetData: createWidgetData(lastSuggestedWidget)
+        }
+      };
+    }
+
+    if (followUp === 'no' && lastSuggestedWidget) {
+      setLastSuggestedWidget(null);
+      return {
+        message: 'No problem! Is there anything else I can help you with regarding your portfolio or dashboard?'
+      };
+    }
+
     const action = detectAction(message);
     const widgetIntent = detectWidgetIntent(message);
     const targetWidget = findTargetWidget(message);
@@ -358,7 +420,8 @@ const ChatInterface: React.FC = () => {
       };
 
       return {
-        message: `${responses[widgetIntent.type]} Would you like me to add a ${widgetNames[widgetIntent.type]} widget to your dashboard for better visualization?`
+        message: `${responses[widgetIntent.type]} Would you like me to add a ${widgetNames[widgetIntent.type]} widget to your dashboard for better visualization?`,
+        suggestedWidget: widgetIntent.type
       };
     }
 
@@ -385,6 +448,14 @@ const ChatInterface: React.FC = () => {
 
     setTimeout(() => {
       const response = simulateAssistantResponse(messageText);
+      
+      // Set suggested widget for follow-up responses
+      if (response.suggestedWidget) {
+        setLastSuggestedWidget(response.suggestedWidget);
+      } else if (!response.widgetAction) {
+        // Clear suggested widget if no suggestion and no action
+        setLastSuggestedWidget(null);
+      }
       
       // Execute widget action if present
       if (response.widgetAction) {
@@ -414,6 +485,7 @@ const ChatInterface: React.FC = () => {
         sender: 'assistant',
         timestamp: new Date(),
         widgetAction: response.widgetAction,
+        suggestedWidget: response.suggestedWidget,
       };
 
       setMessages(prev => [...prev, assistantResponse]);
@@ -451,10 +523,10 @@ const ChatInterface: React.FC = () => {
               }`}
             >
               <p className="text-sm">{message.message}</p>
-              {message.widgetAction && message.sender === 'assistant' && (
+              {(message.widgetAction || message.suggestedWidget) && message.sender === 'assistant' && (
                 <div className="mt-2 pt-2 border-t border-gray-200">
                   <div className="flex items-center space-x-1 text-xs">
-                    {message.widgetAction.type === 'add' && (
+                    {message.widgetAction?.type === 'add' && (
                       <>
                         <Plus className="w-3 h-3 text-green-600" />
                         <span className="text-green-600 font-medium">
@@ -462,7 +534,7 @@ const ChatInterface: React.FC = () => {
                         </span>
                       </>
                     )}
-                    {message.widgetAction.type === 'update' && (
+                    {message.widgetAction?.type === 'update' && (
                       <>
                         <Edit className="w-3 h-3 text-blue-600" />
                         <span className="text-blue-600 font-medium">
@@ -470,11 +542,19 @@ const ChatInterface: React.FC = () => {
                         </span>
                       </>
                     )}
-                    {message.widgetAction.type === 'remove' && (
+                    {message.widgetAction?.type === 'remove' && (
                       <>
                         <Trash2 className="w-3 h-3 text-red-600" />
                         <span className="text-red-600 font-medium">
                           Widget removed from dashboard
+                        </span>
+                      </>
+                    )}
+                    {message.suggestedWidget && !message.widgetAction && (
+                      <>
+                        <Plus className="w-3 h-3 text-orange-600" />
+                        <span className="text-orange-600 font-medium">
+                          Widget suggestion pending - respond with "yes" or "no"
                         </span>
                       </>
                     )}

@@ -15,6 +15,7 @@ export interface ChatMessage {
   sender: 'user' | 'assistant';
   timestamp: Date;
   widgetAction?: WidgetAction;
+  suggestedWidget?: Widget['type'];
 }
 
 export interface WidgetAction {
