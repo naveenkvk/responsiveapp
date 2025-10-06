@@ -3,16 +3,14 @@ import { Send, Bot, User, Plus, Edit, Trash2 } from 'lucide-react';
 import { ChatMessage, Widget, WidgetAction } from '../types';
 import { useDashboard } from '../context/DashboardContext';
 
-const ChatInterface: React.FC = () => {
+interface ChatInterfaceProps {
+  activeTab?: 'dashboard' | 'documents';
+}
+
+const ChatInterface: React.FC<ChatInterfaceProps> = ({ activeTab = 'dashboard' }) => {
   const { widgets, addWidget, updateWidget, removeWidget } = useDashboard();
-  const [messages, setMessages] = useState<ChatMessage[]>([
-    {
-      id: '1',
-      message: 'Hello! I\'m your investment assistant. I can help you with portfolio insights, performance analysis, and manage your dashboard widgets. I can:\n\n• Add widgets: "show me market trends" or "add risk analysis"\n• Edit widgets: "change performance chart to 3 months"\n• Remove widgets: "remove the cash flow widget"\n• Answer investment questions about your portfolio\n\nWhat would you like to explore today?',
-      sender: 'assistant',
-      timestamp: new Date(),
-    }
-  ]);
+
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputMessage, setInputMessage] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -25,6 +23,22 @@ const ChatInterface: React.FC = () => {
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+
+  // Initialize messages when component mounts or activeTab changes
+  useEffect(() => {
+    const initialMessage = activeTab === 'documents' 
+      ? 'Hello! I\'m your document assistant. I can help you with document management and analysis. I can:\n\n• Search documents: "Find Q4 2023 reports" or "Show me tax forms"\n• Summarize content: "Summarize the latest investor letter"\n• Answer questions: "What are my capital call obligations?"\n• Document insights: "Show me all healthcare fund documents"\n\nWhat documents would you like to explore?'
+      : 'Hello! I\'m your investment assistant. I can help you with portfolio insights, performance analysis, and manage your dashboard widgets. I can:\n\n• Add widgets: "show me market trends" or "add risk analysis"\n• Edit widgets: "change performance chart to 3 months"\n• Remove widgets: "remove the cash flow widget"\n• Answer investment questions about your portfolio\n\nWhat would you like to explore today?';
+
+    setMessages([
+      {
+        id: '1',
+        message: initialMessage,
+        sender: 'assistant',
+        timestamp: new Date(),
+      }
+    ]);
+  }, [activeTab]);
 
   const createWidgetData = (type: Widget['type']) => {
     const widgetTemplates = {
@@ -251,6 +265,43 @@ const ChatInterface: React.FC = () => {
   const simulateAssistantResponse = (userMessage: string): { message: string; widgetAction?: WidgetAction; suggestedWidget?: Widget['type'] } => {
     const message = userMessage.toLowerCase();
     const followUp = detectFollowUpResponse(userMessage);
+
+    // Handle document-specific queries when in document vault
+    if (activeTab === 'documents') {
+      if (message.includes('find') || message.includes('search') || message.includes('show me')) {
+        if (message.includes('q4') || message.includes('quarter')) {
+          return {
+            message: 'I found several Q4 documents in your vault:\n\n• Tech Growth Fund III - Q4 2023 Quarterly Report (2.8MB)\n• Real Estate Fund II - Q4 Performance Summary (1.2MB)\n\nWould you like me to summarize any of these documents or search for specific information within them?'
+          };
+        }
+        if (message.includes('tax') || message.includes('k-1')) {
+          return {
+            message: 'Here are your tax-related documents:\n\n• K-1 Tax Form 2023 - Healthcare Fund I (450KB)\n• K-1 Tax Form 2023 - Tech Growth Fund III (380KB)\n• Annual Tax Summary 2023 (920KB)\n\nThese documents contain your investment income and deduction information for tax filing purposes.'
+          };
+        }
+        if (message.includes('healthcare') || message.includes('health')) {
+          return {
+            message: 'Found 3 documents related to Healthcare Fund I:\n\n• K-1 Tax Form 2023 - Healthcare Fund I\n• Healthcare Fund I - Investment Agreement\n• Healthcare Fund I - Q3 2023 Update\n\nWould you like me to provide a summary of the fund\'s performance or specific document details?'
+          };
+        }
+      }
+
+      if (message.includes('summarize') || message.includes('summary')) {
+        return {
+          message: '📄 **AI Document Summary**\n\nBased on the latest investor letter (Annual Investor Letter 2023):\n\n**Key Highlights:**\n• Portfolio returned 15.8% for the year, outperforming benchmarks\n• Successful exits from 3 portfolio companies generated $45M in distributions\n• New investments in 2 high-growth technology companies\n• Strong pipeline for 2024 with $120M in committed capital\n\n**Risk Factors:** Market volatility in tech sector, potential interest rate impacts\n\nWould you like me to dive deeper into any specific section?'
+        };
+      }
+
+      if (message.includes('capital call') || message.includes('obligations')) {
+        return {
+          message: '💰 **Capital Call Summary**\n\nCurrent and upcoming capital call obligations:\n\n**Active Calls:**\n• Real Estate Fund II: $50,000 due Feb 15, 2024\n• Venture Fund IV: $25,000 due Mar 1, 2024\n\n**Recent History:**\n• Healthcare Fund I: $25,000 called Jan 2024 (completed)\n• Tech Growth Fund III: $50,000 called Dec 2023 (completed)\n\n**Total Unfunded Commitments:** $340,000 across all active funds'
+        };
+      }
+
+      return {
+        message: 'I can help you search, analyze, and summarize your investment documents. Try asking me to:\n\n• "Find all Q4 2023 reports"\n• "Show me tax documents"\n• "Summarize the latest investor letter"\n• "What are my capital call obligations?"\n\nWhat specific documents or information are you looking for?'
+      };
+    }
     
     // Handle follow-up responses first
     if (followUp === 'yes' && lastSuggestedWidget) {

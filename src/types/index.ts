@@ -36,3 +36,25 @@ export interface DashboardContextType {
   updateWidget: (id: string, updates: Partial<Widget>) => void;
   removeWidget: (id: string) => void;
 }
+
+export interface Document {
+  id: string;
+  title: string;
+  type: 'quarterly-report' | 'tax-form' | 'fund-document' | 'legal-document' | 'investor-letter' | 'agreement';
+  category: 'Fund Level' | 'Investor Specific';
+  uploadDate: Date;
+  size: number; // in bytes
+  description?: string;
+  tags: string[];
+  fundName?: string;
+  quarter?: string;
+  year?: number;
+  url?: string; // For file download/view
+}
+
+export interface DocumentSearchResult {
+  document: Document;
+  relevanceScore: number;
+  matchedContent: string;
+  summary?: string;
+}
