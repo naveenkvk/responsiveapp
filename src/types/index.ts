@@ -58,3 +58,57 @@ export interface DocumentSearchResult {
   matchedContent: string;
   summary?: string;
 }
+
+export interface Contact {
+  id: string;
+  name: string;
+  role: 'fund-manager' | 'investor-relations' | 'operations' | 'legal' | 'compliance';
+  company: string;
+  email: string;
+  phone?: string;
+  avatar?: string;
+  isOnline: boolean;
+  lastSeen?: Date;
+}
+
+export interface CommunicationMessage {
+  id: string;
+  senderId: string;
+  recipientId: string;
+  message: string;
+  timestamp: Date;
+  type: 'text' | 'file' | 'system' | 'ai-response';
+  isRead: boolean;
+  attachments?: {
+    name: string;
+    size: number;
+    type: string;
+    url: string;
+  }[];
+  metadata?: {
+    fundName?: string;
+    documentId?: string;
+    requestType?: 'form-request' | 'info-update' | 'document-request' | 'general';
+  };
+}
+
+export interface Conversation {
+  id: string;
+  participants: Contact[];
+  lastMessage: CommunicationMessage;
+  unreadCount: number;
+  isPinned: boolean;
+  subject?: string;
+  fundContext?: string;
+}
+
+export interface AITask {
+  id: string;
+  type: 'contact-update' | 'form-request' | 'document-retrieval' | 'appointment-scheduling';
+  status: 'pending' | 'in-progress' | 'completed' | 'failed';
+  description: string;
+  requestedBy: string;
+  createdAt: Date;
+  completedAt?: Date;
+  result?: any;
+}

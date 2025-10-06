@@ -4,7 +4,7 @@ import { ChatMessage, Widget, WidgetAction } from '../types';
 import { useDashboard } from '../context/DashboardContext';
 
 interface ChatInterfaceProps {
-  activeTab?: 'dashboard' | 'documents';
+  activeTab?: 'dashboard' | 'documents' | 'communication';
 }
 
 const ChatInterface: React.FC<ChatInterfaceProps> = ({ activeTab = 'dashboard' }) => {
@@ -26,9 +26,15 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ activeTab = 'dashboard' }
 
   // Initialize messages when component mounts or activeTab changes
   useEffect(() => {
-    const initialMessage = activeTab === 'documents' 
-      ? 'Hello! I\'m your document assistant. I can help you with document management and analysis. I can:\n\n• Search documents: "Find Q4 2023 reports" or "Show me tax forms"\n• Summarize content: "Summarize the latest investor letter"\n• Answer questions: "What are my capital call obligations?"\n• Document insights: "Show me all healthcare fund documents"\n\nWhat documents would you like to explore?'
-      : 'Hello! I\'m your investment assistant. I can help you with portfolio insights, performance analysis, and manage your dashboard widgets. I can:\n\n• Add widgets: "show me market trends" or "add risk analysis"\n• Edit widgets: "change performance chart to 3 months"\n• Remove widgets: "remove the cash flow widget"\n• Answer investment questions about your portfolio\n\nWhat would you like to explore today?';
+    let initialMessage = '';
+    
+    if (activeTab === 'documents') {
+      initialMessage = 'Hello! I\'m your document assistant. I can help you with document management and analysis. I can:\n\n• Search documents: "Find Q4 2023 reports" or "Show me tax forms"\n• Summarize content: "Summarize the latest investor letter"\n• Answer questions: "What are my capital call obligations?"\n• Document insights: "Show me all healthcare fund documents"\n\nWhat documents would you like to explore?';
+    } else if (activeTab === 'communication') {
+      initialMessage = 'Hello! I\'m your communication assistant. I can help you with messaging, task automation, and staying connected with your fund managers. I can:\n\n• Schedule meetings: "Book a call with Sarah Chen"\n• Request forms: "I need updated tax forms"\n• Update information: "Change my contact details"\n• Answer questions: "When is my next capital call?"\n• Send messages: "Message the IR team about distributions"\n\nHow can I assist you today?';
+    } else {
+      initialMessage = 'Hello! I\'m your investment assistant. I can help you with portfolio insights, performance analysis, and manage your dashboard widgets. I can:\n\n• Add widgets: "show me market trends" or "add risk analysis"\n• Edit widgets: "change performance chart to 3 months"\n• Remove widgets: "remove the cash flow widget"\n• Answer investment questions about your portfolio\n\nWhat would you like to explore today?';
+    }
 
     setMessages([
       {
@@ -300,6 +306,50 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ activeTab = 'dashboard' }
 
       return {
         message: 'I can help you search, analyze, and summarize your investment documents. Try asking me to:\n\n• "Find all Q4 2023 reports"\n• "Show me tax documents"\n• "Summarize the latest investor letter"\n• "What are my capital call obligations?"\n\nWhat specific documents or information are you looking for?'
+      };
+    }
+
+    // Handle communication-specific queries
+    if (activeTab === 'communication') {
+      if (message.includes('schedule') || message.includes('book') || message.includes('meeting') || message.includes('call')) {
+        const nameMatch = message.match(/with ([a-z\s]+)/i);
+        const contactName = nameMatch ? nameMatch[1].trim() : 'your fund manager';
+        return {
+          message: `📅 **Meeting Scheduled**\n\nI've initiated a meeting request ${nameMatch ? `with ${contactName}` : 'with your fund manager'}. Here's what I'll do:\n\n✅ Check their availability for next week\n✅ Send calendar invites\n✅ Prepare agenda with recent portfolio updates\n✅ Set up video conference link\n\nYou'll receive a confirmation email within 15 minutes with the meeting details. Is there a specific topic you'd like to discuss?`
+        };
+      }
+
+      if (message.includes('request') && (message.includes('form') || message.includes('document'))) {
+        return {
+          message: '📋 **Form Request Processed**\n\nI\'ve automatically requested the following documents for you:\n\n• Updated contact information forms\n• Banking detail update forms\n• Tax information worksheets\n• Beneficiary designation forms\n\nThese will be sent to your registered email address within 2 business hours. The forms are pre-filled with your current information where possible.\n\n📧 **Email notification sent:** Form request confirmation'
+        };
+      }
+
+      if (message.includes('update') && (message.includes('contact') || message.includes('information') || message.includes('details'))) {
+        return {
+          message: '✏️ **Information Update Started**\n\nI\'ve initiated the contact information update process. Here\'s what happens next:\n\n1. **Secure verification link** sent to your email\n2. **Update form** with current details pre-populated\n3. **Compliance review** (24-48 hours)\n4. **Confirmation** once changes are active\n\n🔒 **Security Note:** For your protection, banking and tax information updates require additional verification steps.\n\nCheck your email for the secure update link!'
+        };
+      }
+
+      if (message.includes('message') || message.includes('send') || message.includes('contact')) {
+        if (message.includes('ir') || message.includes('investor relations')) {
+          return {
+            message: '💬 **Message Sent to Investor Relations**\n\n**To:** Healthcare Fund I - Investor Relations Team\n**From:** John Doe\n**Subject:** General Inquiry\n\n✅ Message delivered successfully\n✅ Read receipt requested\n✅ Expected response: 1-2 business days\n\n📱 **Follow-up options:**\n• Schedule a call if you need immediate assistance\n• Check Communication Hub for response tracking\n\nIs there anything specific you\'d like me to mention in the message?'
+          };
+        }
+        return {
+          message: '💬 **Message Prepared**\n\nI\'m ready to send your message. Please specify:\n\n👥 **Who should I contact?**\n• Sarah Chen (Fund Manager - Tech Growth III)\n• Michael Rodriguez (IR - Healthcare Fund)\n• Emma Thompson (Operations - Real Estate Fund)\n• David Park (Compliance - Venture Fund)\n\n📝 **What would you like to say?**\nI can help draft professional messages for various purposes like performance inquiries, document requests, or meeting scheduling.'
+        };
+      }
+
+      if (message.includes('capital call') || message.includes('next call') || message.includes('funding')) {
+        return {
+          message: '💰 **Upcoming Capital Calls**\n\n**Next 30 Days:**\n• Real Estate Fund II: $50,000 due Feb 15, 2024\n• Venture Fund IV: $25,000 due Mar 1, 2024\n\n**Recent Completed:**\n• Healthcare Fund I: $25,000 (Jan 2024) ✅\n• Tech Growth Fund III: $50,000 (Dec 2023) ✅\n\n📊 **Summary:**\n• Total upcoming: $75,000\n• Remaining commitments: $340,000\n• Average quarterly calls: $62,500\n\n🔔 **Automated reminders** are set for 7 days and 2 days before each due date.'
+        };
+      }
+
+      return {
+        message: 'I can help you with communication tasks and staying connected with your fund managers. Try asking me to:\n\n• "Schedule a meeting with Sarah Chen"\n• "Request updated tax forms"\n• "Update my contact information"\n• "Message the IR team"\n• "When is my next capital call?"\n\nWhat would you like me to help you with?'
       };
     }
     
