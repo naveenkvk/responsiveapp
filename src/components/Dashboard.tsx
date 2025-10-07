@@ -3,6 +3,7 @@ import GridLayout from 'react-grid-layout';
 import { Widget } from '../types';
 import WidgetComponent from './WidgetComponent';
 import AddWidgetModal from './AddWidgetModal';
+import AIInsights from './AIInsights';
 import { Plus, Settings } from 'lucide-react';
 import { useDashboard } from '../context/DashboardContext';
 import 'react-grid-layout/css/styles.css';
@@ -114,8 +115,12 @@ const Dashboard: React.FC = () => {
             </div>
           ))}
         </GridLayout>
+        </div>
       </div>
-    </div>
+
+      {/* AI Insights Section */}
+      <AIInsights />
+
       {/* Add Widget Modal */}
       <AddWidgetModal
         isOpen={isAddWidgetModalOpen}
