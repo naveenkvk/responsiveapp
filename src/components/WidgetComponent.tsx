@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Widget } from '../types';
-import { TrendingUp, TrendingDown, DollarSign, BarChart3, PieChart, Clock, Newspaper, AlertTriangle, Activity, X } from 'lucide-react';
+import { TrendingUp, TrendingDown, DollarSign, BarChart3, PieChart, Clock, Newspaper, AlertTriangle, Activity, X, ExternalLink } from 'lucide-react';
 import { useDashboard } from '../context/DashboardContext';
+import WidgetDetailModal from './WidgetDetailModal';
 
 interface WidgetComponentProps {
   widget: Widget;
@@ -10,6 +11,7 @@ interface WidgetComponentProps {
 
 const WidgetComponent: React.FC<WidgetComponentProps> = ({ widget, isCustomizing = false }) => {
   const { removeWidget } = useDashboard();
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
@@ -247,32 +249,81 @@ const WidgetComponent: React.FC<WidgetComponentProps> = ({ widget, isCustomizing
     }
   };
 
+  const handleWidgetClick = () => {
+    if (!isCustomizing) {
+      setIsDetailModalOpen(true);
+    }
+  };
+
   return (
-    <div className="h-full p-2 sm:p-4 bg-white rounded-lg relative">
-      {isCustomizing && (
-        <button
-          onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            removeWidget(widget.id);
-          }}
-          onMouseDown={(e) => e.stopPropagation()}
-          className="absolute top-2 right-2 p-1 bg-red-100 hover:bg-red-200 text-red-600 rounded-full transition-colors z-10 shadow-sm"
-          title="Remove widget"
-        >
-          <X className="w-3 h-3" />
-        </button>
-      )}
-      <div className="flex items-center space-x-2 mb-2 sm:mb-4">
-        <div className="text-primary-600">
-          {getIcon()}
+    <>
+      <div 
+        className={`h-full p-2 sm:p-4 bg-white rounded-lg relative transition-all duration-200 ${
+          !isCustomizing ? 'cursor-pointer hover:shadow-lg hover:bg-gray-50 group' : ''
+        }`}
+        onClick={handleWidgetClick}
+      >
+        {/* Action Buttons */}
+        <div className="absolute top-2 right-2 flex items-center space-x-1 z-10">
+          {!isCustomizing && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsDetailModalOpen(true);
+              }}
+              className="p-1 bg-blue-100 hover:bg-blue-200 text-blue-600 rounded-full transition-colors opacity-0 group-hover:opacity-100 shadow-sm"
+              title="View details"
+            >
+              <ExternalLink className="w-3 h-3" />
+            </button>
+          )}
+          
+          {isCustomizing && (
+            <button
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                removeWidget(widget.id);
+              }}
+              onMouseDown={(e) => e.stopPropagation()}
+              className="p-1 bg-red-100 hover:bg-red-200 text-red-600 rounded-full transition-colors shadow-sm"
+              title="Remove widget"
+            >
+              <X className="w-3 h-3" />
+            </button>
+          )}
         </div>
-        <h3 className="text-sm sm:text-lg font-semibold text-gray-900 truncate pr-6">{widget.title}</h3>
+
+        {/* Widget Header */}
+        <div className="flex items-center space-x-2 mb-2 sm:mb-4">
+          <div className="text-primary-600">
+            {getIcon()}
+          </div>
+          <h3 className="text-sm sm:text-lg font-semibold text-gray-900 truncate pr-8">{widget.title}</h3>
+        </div>
+
+        {/* Widget Content */}
+        <div className="h-full overflow-auto">
+          {renderContent()}
+        </div>
+
+        {/* Hover Indicator */}
+        {!isCustomizing && (
+          <div className="absolute bottom-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+            <div className="text-xs text-gray-500 bg-white px-2 py-1 rounded shadow-sm">
+              Click for details
+            </div>
+          </div>
+        )}
       </div>
-      <div className="h-full overflow-auto">
-        {renderContent()}
-      </div>
-    </div>
+
+      {/* Detail Modal */}
+      <WidgetDetailModal
+        widget={widget}
+        isOpen={isDetailModalOpen}
+        onClose={() => setIsDetailModalOpen(false)}
+      />
+    </>
   );
 };
 
