@@ -44,7 +44,7 @@ const BrandedHeader: React.FC<BrandedHeaderProps> = ({ activeTab, onTabChange })
       className="shadow-sm border-b"
       style={headerStyle}
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-[95vw] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           <div className="flex items-center space-x-8">
             {/* Company Logo and Name */}

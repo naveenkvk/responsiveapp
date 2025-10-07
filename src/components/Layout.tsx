@@ -35,7 +35,7 @@ const Layout: React.FC = () => {
         <BrandedHeader activeTab={activeTab} onTabChange={setActiveTab} />
 
         <main className={`flex-1 mx-auto px-4 sm:px-6 lg:px-8 py-6 transition-all duration-300 ${
-          isChatOpen ? 'max-w-5xl pr-96' : 'max-w-7xl'
+          isChatOpen ? 'max-w-6xl pr-96' : 'max-w-[95vw]'
         }`}>
           {activeTab === 'dashboard' && <Dashboard />}
           {activeTab === 'documents' && <DocumentVault />}
