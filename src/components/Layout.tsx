@@ -34,8 +34,8 @@ const Layout: React.FC = () => {
       <div className="min-h-screen bg-gray-50 flex flex-col" style={themeStyles}>
         <BrandedHeader activeTab={activeTab} onTabChange={setActiveTab} />
 
-        <main className={`flex-1 mx-auto px-4 sm:px-6 lg:px-8 py-6 transition-all duration-300 ${
-          isChatOpen ? 'max-w-6xl pr-96' : 'max-w-[95vw]'
+        <main className={`flex-1 w-full mx-auto px-2 sm:px-4 lg:px-6 py-6 transition-all duration-300 ${
+  isChatOpen ? 'pr-96' : ''
         }`}>
           {activeTab === 'dashboard' && <Dashboard />}
           {activeTab === 'documents' && <DocumentVault />}

@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useRef, useEffect } from 'react';
 import GridLayout from 'react-grid-layout';
 import { Widget } from '../types';
 import WidgetComponent from './WidgetComponent';
@@ -13,6 +13,20 @@ const Dashboard: React.FC = () => {
 
   const [isCustomizing, setIsCustomizing] = useState(false);
   const [isAddWidgetModalOpen, setIsAddWidgetModalOpen] = useState(false);
+  const [containerWidth, setContainerWidth] = useState(1200);
+  const containerRef = useRef<HTMLDivElement>(null);
+// Add this useEffect to dynamically calculate container width
+  useEffect(() => {
+    const updateWidth = () => {
+      if (containerRef.current) {
+        setContainerWidth(containerRef.current.offsetWidth);
+      }
+    };
+
+    updateWidth();
+    window.addEventListener('resize', updateWidth);
+    return () => window.removeEventListener('resize', updateWidth);
+  }, []);
 
   const onLayoutChange = useCallback((layout: any[]) => {
     if (!isCustomizing) return;
@@ -76,18 +90,19 @@ const Dashboard: React.FC = () => {
         </div>
       )}
 
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-3 md:p-6 overflow-hidden">
+      <div ref={containerRef} className="bg-white rounded-lg shadow-sm border border-gray-200 p-2 sm:p-4 lg:p-6 overflow-hidden w-full flex justify-center">
+        <div className="w-full max-w-[1800px]"> 
         <GridLayout
           className="layout"
           layout={gridLayout}
           onLayoutChange={onLayoutChange}
           cols={12}
           rowHeight={60}
-          width={1200}
+          width={containerWidth}
           isDraggable={isCustomizing}
           isResizable={isCustomizing}
           margin={[16, 16]}
-          containerPadding={[0, 0]}
+          containerPadding={[24, 24]}
           useCSSTransforms={true}
           compactType={null}
           preventCollision={true}
@@ -100,7 +115,7 @@ const Dashboard: React.FC = () => {
           ))}
         </GridLayout>
       </div>
-
+    </div>
       {/* Add Widget Modal */}
       <AddWidgetModal
         isOpen={isAddWidgetModalOpen}
