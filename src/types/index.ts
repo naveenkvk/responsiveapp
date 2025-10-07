@@ -112,3 +112,41 @@ export interface AITask {
   completedAt?: Date;
   result?: any;
 }
+
+export interface Company {
+  id: string;
+  name: string;
+  displayName: string;
+  logo: string;
+  primaryColor: string;
+  secondaryColor: string;
+  headerStyle: {
+    backgroundColor: string;
+    textColor: string;
+    borderColor: string;
+  };
+  footerStyle: {
+    backgroundColor: string;
+    textColor: string;
+    borderColor: string;
+  };
+}
+
+export interface User {
+  id: string;
+  username: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  companyId: string;
+  company: Company;
+  role: 'investor' | 'admin';
+}
+
+export interface AuthContextType {
+  user: User | null;
+  isAuthenticated: boolean;
+  login: (username: string, password: string) => Promise<boolean>;
+  logout: () => void;
+  loading: boolean;
+}
