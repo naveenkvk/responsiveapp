@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { X, TrendingUp, TrendingDown, DollarSign, Calendar, Building, User, AlertCircle, AlertTriangle, CheckCircle, Info } from 'lucide-react';
 import { Widget } from '../types';
 
@@ -9,6 +9,26 @@ interface WidgetDetailModalProps {
 }
 
 const WidgetDetailModal: React.FC<WidgetDetailModalProps> = ({ widget, isOpen, onClose }) => {
+  // Handle keyboard escape - must be before early return
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isOpen) {
+        onClose();
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener('keydown', handleKeyDown);
+      // Prevent body scroll when modal is open
+      document.body.style.overflow = 'hidden';
+    }
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+      document.body.style.overflow = 'unset';
+    };
+  }, [isOpen, onClose]);
+
   if (!isOpen || !widget) return null;
 
   const formatCurrency = (amount: number) => {
@@ -798,25 +818,35 @@ const WidgetDetailModal: React.FC<WidgetDetailModalProps> = ({ widget, isOpen, o
     }
   };
 
+  const handleBackdropClick = (e: React.MouseEvent) => {
+    if (e.target === e.currentTarget) {
+      onClose();
+    }
+  };
+
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-xl shadow-xl max-w-6xl w-full max-h-[90vh] overflow-hidden">
-        {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-200">
-          <div>
-            <h2 className="text-2xl font-bold text-gray-900">{widget.title}</h2>
+    <div 
+      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-[9999] overflow-hidden"
+      onClick={handleBackdropClick}
+    >
+      <div className="bg-white rounded-xl shadow-xl max-w-6xl w-full max-h-[90vh] flex flex-col relative">
+        {/* Header - Fixed */}
+        <div className="flex items-center justify-between p-4 sm:p-6 border-b border-gray-200 flex-shrink-0">
+          <div className="flex-1 mr-4">
+            <h2 className="text-xl sm:text-2xl font-bold text-gray-900 truncate">{widget.title}</h2>
             <p className="text-sm text-gray-600 mt-1">Detailed analysis and breakdown</p>
           </div>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+            className="p-2 hover:bg-gray-100 rounded-lg transition-colors flex-shrink-0 ml-2"
+            title="Close"
           >
-            <X className="w-6 h-6 text-gray-500" />
+            <X className="w-5 h-5 sm:w-6 sm:h-6 text-gray-500" />
           </button>
         </div>
 
-        {/* Content */}
-        <div className="p-6 overflow-y-auto max-h-[calc(90vh-100px)]">
+        {/* Content - Scrollable */}
+        <div className="flex-1 overflow-y-auto p-4 sm:p-6">
           {renderDetailContent()}
         </div>
       </div>

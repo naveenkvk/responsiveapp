@@ -20,7 +20,11 @@ const Dashboard: React.FC = () => {
   useEffect(() => {
     const updateWidth = () => {
       if (containerRef.current) {
-        setContainerWidth(containerRef.current.offsetWidth);
+        // Account for padding and margins to prevent cropping
+        const padding = 64; // Total horizontal padding (32px each side for lg:p-8)
+        const maxWidth = 1800; // Maximum content width
+        const availableWidth = containerRef.current.offsetWidth - padding;
+        setContainerWidth(Math.min(availableWidth, maxWidth));
       }
     };
 
@@ -91,30 +95,32 @@ const Dashboard: React.FC = () => {
         </div>
       )}
 
-      <div ref={containerRef} className="bg-white rounded-lg shadow-sm border border-gray-200 p-2 sm:p-4 lg:p-6 overflow-hidden w-full flex justify-center">
-        <div className="w-full max-w-[1800px]"> 
-        <GridLayout
-          className="layout"
-          layout={gridLayout}
-          onLayoutChange={onLayoutChange}
-          cols={12}
-          rowHeight={60}
-          width={containerWidth}
-          isDraggable={isCustomizing}
-          isResizable={isCustomizing}
-          margin={[16, 16]}
-          containerPadding={[24, 24]}
-          useCSSTransforms={true}
-          compactType={null}
-          preventCollision={true}
-          autoSize={true}
-        >
-          {widgets.map(widget => (
-            <div key={widget.id} className="bg-gray-50 rounded-lg border border-gray-200">
-              <WidgetComponent widget={widget} isCustomizing={isCustomizing} />
-            </div>
-          ))}
-        </GridLayout>
+      <div ref={containerRef} className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 sm:p-6 lg:p-8 w-full">
+        <div className="w-full flex justify-center">
+          <div className="w-full max-w-[1800px]">
+            <GridLayout
+              className="layout"
+              layout={gridLayout}
+              onLayoutChange={onLayoutChange}
+              cols={12}
+              rowHeight={70}
+              width={containerWidth}
+              isDraggable={isCustomizing}
+              isResizable={isCustomizing}
+              margin={[12, 12]}
+              containerPadding={[0, 0]}
+              useCSSTransforms={true}
+              compactType="vertical"
+              preventCollision={true}
+              autoSize={true}
+            >
+              {widgets.map(widget => (
+                <div key={widget.id} className="bg-gray-50 rounded-lg border border-gray-200 overflow-hidden">
+                  <WidgetComponent widget={widget} isCustomizing={isCustomizing} />
+                </div>
+              ))}
+            </GridLayout>
+          </div>
         </div>
       </div>
 

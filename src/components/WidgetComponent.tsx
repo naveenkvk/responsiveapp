@@ -303,7 +303,7 @@ const WidgetComponent: React.FC<WidgetComponentProps> = ({ widget, isCustomizing
         </div>
 
         {/* Widget Content */}
-        <div className="h-full overflow-auto">
+        <div className="h-full overflow-auto p-1">
           {renderContent()}
         </div>
 
