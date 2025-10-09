@@ -3,6 +3,7 @@ import { MessageCircle, X, Maximize2, Minimize2 } from 'lucide-react';
 import Dashboard from './Dashboard';
 import DocumentVault from './DocumentVault';
 import CommunicationHub from './CommunicationHub';
+import Calendar from './Calendar';
 import ChatInterface from './ChatInterface';
 import BrandedHeader from './BrandedHeader';
 import BrandedFooter from './BrandedFooter';
@@ -12,7 +13,7 @@ import { useAuth } from '../context/AuthContext';
 const Layout: React.FC = () => {
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [isChatExpanded, setIsChatExpanded] = useState(false);
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'documents' | 'communication'>('dashboard');
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'documents' | 'communication' | 'calendar'>('dashboard');
   const { user } = useAuth();
 
   if (!user) {
@@ -40,6 +41,7 @@ const Layout: React.FC = () => {
           {activeTab === 'dashboard' && <Dashboard />}
           {activeTab === 'documents' && <DocumentVault />}
           {activeTab === 'communication' && <CommunicationHub />}
+          {activeTab === 'calendar' && <Calendar />}
         </main>
 
         <BrandedFooter />

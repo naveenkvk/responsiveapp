@@ -1,12 +1,20 @@
 export interface Widget {
   id: string;
-  type: 'portfolio-overview' | 'performance-chart' | 'asset-allocation' | 'recent-transactions' | 'news-feed' | 'market-trends' | 'risk-analysis' | 'cash-flow';
+  type: 'portfolio-overview' | 'performance-chart' | 'asset-allocation' | 'recent-transactions' | 'news-feed' | 'market-trends' | 'risk-analysis' | 'cash-flow' | 'upcoming-events';
   title: string;
   x: number;
   y: number;
   w: number;
   h: number;
   data?: any;
+  visualizationFormat?: VisualizationFormat;
+  customFormatOptions?: {
+    showLegend?: boolean;
+    colors?: string[];
+    showLabels?: boolean;
+    compactView?: boolean;
+    showTrends?: boolean;
+  };
 }
 
 export interface ChatMessage {
@@ -18,12 +26,22 @@ export interface ChatMessage {
   suggestedWidget?: Widget['type'];
 }
 
+export type VisualizationFormat = 'bar-chart' | 'line-chart' | 'pie-chart' | 'table' | 'cards' | 'list' | 'donut-chart' | 'area-chart';
+
 export interface WidgetAction {
-  type: 'add' | 'update' | 'remove';
+  type: 'add' | 'update' | 'remove' | 'format-change';
   widgetType?: Widget['type'];
   widgetId?: string;
   widgetData?: Partial<Widget>;
-  updateType?: 'data' | 'title' | 'size';
+  updateType?: 'data' | 'title' | 'size' | 'format' | 'options';
+  newFormat?: VisualizationFormat;
+  formatOptions?: {
+    showLegend?: boolean;
+    colors?: string[];
+    showLabels?: boolean;
+    compactView?: boolean;
+    showTrends?: boolean;
+  };
 }
 
 export interface DashboardLayout {
@@ -149,4 +167,32 @@ export interface AuthContextType {
   login: (username: string, password: string) => Promise<boolean>;
   logout: () => void;
   loading: boolean;
+}
+
+export interface CalendarEvent {
+  id: string;
+  title: string;
+  description?: string;
+  date: Date;
+  endDate?: Date;
+  type: 'meeting' | 'capital-call' | 'distribution' | 'deadline' | 'conference' | 'webinar' | 'presentation' | 'other';
+  location?: string;
+  attendees?: string[];
+  fundName?: string;
+  isReminder?: boolean;
+  reminderTime?: number; // minutes before event
+  status: 'scheduled' | 'confirmed' | 'completed' | 'cancelled';
+  priority: 'low' | 'medium' | 'high';
+  isRecurring?: boolean;
+  recurrencePattern?: 'daily' | 'weekly' | 'monthly' | 'yearly';
+  createdBy?: string;
+  url?: string; // For virtual meetings
+}
+
+export interface CalendarReminder {
+  id: string;
+  eventId: string;
+  reminderTime: number; // minutes before event
+  isActive: boolean;
+  notificationSent: boolean;
 }

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Widget } from '../types';
-import { TrendingUp, TrendingDown, DollarSign, BarChart3, PieChart, Clock, Newspaper, AlertTriangle, Activity, X, ExternalLink } from 'lucide-react';
+import { TrendingUp, TrendingDown, DollarSign, BarChart3, PieChart, Clock, Newspaper, AlertTriangle, Activity, X, ExternalLink, Calendar, MapPin, Users } from 'lucide-react';
 import { useDashboard } from '../context/DashboardContext';
 import WidgetDetailModal from './WidgetDetailModal';
 
@@ -217,6 +217,54 @@ const WidgetComponent: React.FC<WidgetComponentProps> = ({ widget, isCustomizing
           </div>
         );
 
+      case 'upcoming-events':
+        return (
+          <div className="space-y-3">
+            {widget.data?.events?.map((event: any, index: number) => (
+              <div key={index} className="p-3 bg-gray-50 rounded-lg border-l-4 border-blue-500">
+                <div className="flex items-start justify-between">
+                  <div className="flex-1">
+                    <div className="flex items-center space-x-2 mb-1">
+                      <div className={`w-2 h-2 rounded-full ${
+                        event.priority === 'high' ? 'bg-red-500' :
+                        event.priority === 'medium' ? 'bg-yellow-500' : 'bg-green-500'
+                      }`}></div>
+                      <span className="text-sm font-medium text-gray-900">{event.title}</span>
+                    </div>
+                    <div className="flex items-center space-x-4 text-xs text-gray-600">
+                      <div className="flex items-center space-x-1">
+                        <Calendar className="w-3 h-3" />
+                        <span>{new Date(event.date).toLocaleDateString()}</span>
+                      </div>
+                      {event.location && (
+                        <div className="flex items-center space-x-1">
+                          <MapPin className="w-3 h-3" />
+                          <span>{event.location}</span>
+                        </div>
+                      )}
+                      {event.attendees && (
+                        <div className="flex items-center space-x-1">
+                          <Users className="w-3 h-3" />
+                          <span>{event.attendees.length}</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  <span className={`px-2 py-1 text-xs rounded-full ${
+                    event.type === 'meeting' ? 'bg-blue-100 text-blue-800' :
+                    event.type === 'capital-call' ? 'bg-red-100 text-red-800' :
+                    event.type === 'distribution' ? 'bg-green-100 text-green-800' :
+                    event.type === 'deadline' ? 'bg-orange-100 text-orange-800' :
+                    'bg-gray-100 text-gray-800'
+                  }`}>
+                    {event.type.replace('-', ' ').toUpperCase()}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        );
+
       default:
         return (
           <div className="flex items-center justify-center h-full text-gray-500">
@@ -244,6 +292,8 @@ const WidgetComponent: React.FC<WidgetComponentProps> = ({ widget, isCustomizing
         return <AlertTriangle className="w-5 h-5" />;
       case 'cash-flow':
         return <Activity className="w-5 h-5" />;
+      case 'upcoming-events':
+        return <Calendar className="w-5 h-5" />;
       default:
         return <BarChart3 className="w-5 h-5" />;
     }

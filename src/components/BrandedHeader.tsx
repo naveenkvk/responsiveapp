@@ -1,10 +1,10 @@
 import React from 'react';
-import { BarChart3, FileText, Users, LogOut } from 'lucide-react';
+import { BarChart3, FileText, Users, Calendar, LogOut } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 interface BrandedHeaderProps {
-  activeTab: 'dashboard' | 'documents' | 'communication';
-  onTabChange: (tab: 'dashboard' | 'documents' | 'communication') => void;
+  activeTab: 'dashboard' | 'documents' | 'communication' | 'calendar';
+  onTabChange: (tab: 'dashboard' | 'documents' | 'communication' | 'calendar') => void;
 }
 
 const BrandedHeader: React.FC<BrandedHeaderProps> = ({ activeTab, onTabChange }) => {
@@ -122,6 +122,27 @@ const BrandedHeader: React.FC<BrandedHeaderProps> = ({ activeTab, onTabChange })
                 <Users className="w-4 h-4" />
                 <span>Communication Hub</span>
               </button>
+
+              <button
+                onClick={() => onTabChange('calendar')}
+                className="flex items-center space-x-2 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 border border-transparent"
+                style={getTabStyle(activeTab === 'calendar')}
+                onMouseEnter={(e) => {
+                  if (activeTab !== 'calendar') {
+                    e.currentTarget.style.backgroundColor = `${company.primaryColor}10`;
+                    e.currentTarget.style.color = company.headerStyle.textColor;
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (activeTab !== 'calendar') {
+                    e.currentTarget.style.backgroundColor = 'transparent';
+                    e.currentTarget.style.color = `${company.headerStyle.textColor}80`;
+                  }
+                }}
+              >
+                <Calendar className="w-4 h-4" />
+                <span>Calendar</span>
+              </button>
             </nav>
           </div>
           
@@ -150,6 +171,14 @@ const BrandedHeader: React.FC<BrandedHeaderProps> = ({ activeTab, onTabChange })
                 style={getTabStyle(activeTab === 'communication')}
               >
                 <Users className="w-5 h-5" />
+              </button>
+
+              <button
+                onClick={() => onTabChange('calendar')}
+                className="p-2 rounded-lg transition-colors border border-transparent"
+                style={getTabStyle(activeTab === 'calendar')}
+              >
+                <Calendar className="w-5 h-5" />
               </button>
             </div>
 

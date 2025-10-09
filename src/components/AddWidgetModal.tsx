@@ -1,5 +1,5 @@
 import React from 'react';
-import { X, DollarSign, BarChart3, PieChart, Clock, Newspaper, TrendingUp, AlertTriangle, Activity } from 'lucide-react';
+import { X, DollarSign, BarChart3, PieChart, Clock, Newspaper, TrendingUp, AlertTriangle, Activity, Calendar } from 'lucide-react';
 import { Widget } from '../types';
 import { useDashboard } from '../context/DashboardContext';
 
@@ -75,6 +75,13 @@ const AddWidgetModal: React.FC<AddWidgetModalProps> = ({ isOpen, onClose }) => {
       description: 'Latest investment news and market updates',
       icon: <Newspaper className="w-6 h-6" />,
       size: { w: 6, h: 4 }
+    },
+    {
+      type: 'upcoming-events',
+      title: 'Upcoming Events',
+      description: 'Meetings, capital calls, distributions, and deadlines',
+      icon: <Calendar className="w-6 h-6" />,
+      size: { w: 8, h: 4 }
     }
   ];
 
@@ -153,6 +160,42 @@ const AddWidgetModal: React.FC<AddWidgetModalProps> = ({ isOpen, onClose }) => {
             { month: 'Feb', inflow: 0, outflow: -30000, net: -30000 },
             { month: 'Mar', inflow: 100000, outflow: -25000, net: 75000 },
             { month: 'Apr', inflow: 50000, outflow: -40000, net: 10000 },
+          ]
+        }
+      },
+      'upcoming-events': {
+        data: {
+          events: [
+            {
+              id: '1',
+              title: 'Q1 2024 Investor Meeting',
+              date: new Date('2024-02-15T14:00:00'),
+              endDate: new Date('2024-02-15T16:00:00'),
+              type: 'meeting',
+              location: 'Virtual Meeting',
+              attendees: ['John Smith', 'Sarah Chen'],
+              fundName: 'Tech Growth Fund III',
+              priority: 'high',
+              status: 'confirmed'
+            },
+            {
+              id: '2',
+              title: 'Healthcare Fund I Capital Call',
+              date: new Date('2024-02-20T09:00:00'),
+              type: 'capital-call',
+              fundName: 'Healthcare Fund I',
+              priority: 'high',
+              status: 'scheduled'
+            },
+            {
+              id: '3',
+              title: 'Real Estate Fund II Distribution',
+              date: new Date('2024-02-28T10:00:00'),
+              type: 'distribution',
+              fundName: 'Real Estate Fund II',
+              priority: 'medium',
+              status: 'scheduled'
+            }
           ]
         }
       }
