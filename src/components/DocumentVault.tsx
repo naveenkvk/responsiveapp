@@ -11,9 +11,28 @@ import {
   Sparkles,
   Folder,
   Clock,
-  User
+  User,
+  Brain,
+  X,
+  ChevronRight,
+  AlertCircle
 } from 'lucide-react';
 import { Document, DocumentSearchResult } from '../types';
+
+interface DocumentSummary {
+  id: string;
+  title: string;
+  keyPoints: string[];
+  executiveSummary: string;
+  financialHighlights?: {
+    label: string;
+    value: string;
+    trend?: 'positive' | 'negative' | 'neutral';
+  }[];
+  riskFactors?: string[];
+  nextSteps?: string[];
+  generatedAt: Date;
+}
 
 const DocumentVault: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -21,6 +40,9 @@ const DocumentVault: React.FC = () => {
   const [selectedType, setSelectedType] = useState<string>('All');
   const [isSearching, setIsSearching] = useState(false);
   const [searchResults, setSearchResults] = useState<DocumentSearchResult[]>([]);
+  const [selectedDocumentForSummary, setSelectedDocumentForSummary] = useState<Document | null>(null);
+  const [isGeneratingSummary, setIsGeneratingSummary] = useState(false);
+  const [documentSummary, setDocumentSummary] = useState<DocumentSummary | null>(null);
 
   // Sample documents data
   const sampleDocuments: Document[] = [
@@ -164,6 +186,158 @@ const DocumentVault: React.FC = () => {
     } else {
       setSearchResults([]);
     }
+  };
+
+  const generateAISummary = async (document: Document): Promise<DocumentSummary> => {
+    // Simulate AI processing delay
+    await new Promise(resolve => setTimeout(resolve, 2000));
+
+    // Generate different summaries based on document type
+    const summaries: Record<string, Partial<DocumentSummary>> = {
+      'quarterly-report': {
+        keyPoints: [
+          'Portfolio performance exceeded benchmarks by 2.3% in Q4 2023',
+          'Three new investments completed totaling $125M in committed capital',
+          'Two portfolio companies achieved successful exits generating 3.2x returns',
+          'Fund is 85% deployed with strong pipeline for remaining capital'
+        ],
+        executiveSummary: 'This quarterly report demonstrates strong fund performance with notable outperformance against benchmarks and successful portfolio management. The fund continues to execute its investment strategy effectively with disciplined capital deployment and value creation initiatives.',
+        financialHighlights: [
+          { label: 'Quarterly Return', value: '+8.7%', trend: 'positive' },
+          { label: 'YTD Performance', value: '+15.2%', trend: 'positive' },
+          { label: 'Total Fund Size', value: '$500M', trend: 'neutral' },
+          { label: 'Deployed Capital', value: '85%', trend: 'positive' }
+        ],
+        riskFactors: [
+          'Market volatility may impact near-term valuations',
+          'Interest rate environment affecting growth company multiples'
+        ],
+        nextSteps: [
+          'Complete due diligence on two pipeline opportunities',
+          'Prepare for annual investor meeting in Q1 2024'
+        ]
+      },
+      'tax-form': {
+        keyPoints: [
+          'K-1 form reflects $45,000 in taxable income allocation',
+          'Ordinary income: $12,000 from fund operations',
+          'Capital gains: $33,000 from portfolio company exits',
+          'No passive activity limitations apply to this investment'
+        ],
+        executiveSummary: 'This K-1 tax form summarizes your tax obligations from Healthcare Fund I for the 2023 tax year. The allocation includes both ordinary income from fund operations and capital gains from successful portfolio exits.',
+        financialHighlights: [
+          { label: 'Total Taxable Income', value: '$45,000', trend: 'neutral' },
+          { label: 'Ordinary Income', value: '$12,000', trend: 'neutral' },
+          { label: 'Capital Gains', value: '$33,000', trend: 'positive' },
+          { label: 'Tax Credits', value: '$0', trend: 'neutral' }
+        ],
+        nextSteps: [
+          'Consult with tax advisor for proper reporting',
+          'Include in Schedule K-1 of personal tax return'
+        ]
+      },
+      'fund-document': {
+        keyPoints: [
+          'Capital call of $2.5M requested for Real Estate Fund II',
+          'Funding required for two industrial property acquisitions',
+          'Properties located in high-growth logistics markets',
+          'Payment due within 10 business days of notice'
+        ],
+        executiveSummary: 'This capital call notice requests additional funding to support strategic real estate acquisitions in the industrial logistics sector, aligning with the fund\'s investment thesis of capitalizing on e-commerce growth.',
+        financialHighlights: [
+          { label: 'Capital Call Amount', value: '$2.5M', trend: 'neutral' },
+          { label: 'Total Fund Commitment', value: '$25M', trend: 'neutral' },
+          { label: 'Called to Date', value: '68%', trend: 'positive' },
+          { label: 'Expected IRR', value: '12-15%', trend: 'positive' }
+        ],
+        nextSteps: [
+          'Transfer funds by specified due date',
+          'Review acquisition details in attached materials'
+        ]
+      },
+      'legal-document': {
+        keyPoints: [
+          'Limited Partnership Agreement establishes fund structure and terms',
+          'Management fee: 2% annually on committed capital',
+          'Carried interest: 20% above 8% preferred return threshold',
+          'Investment period: 5 years with potential 2-year extension'
+        ],
+        executiveSummary: 'This Limited Partnership Agreement outlines the legal structure, economic terms, and governance provisions for Venture Fund IV, establishing the relationship between the general partner and limited partners.',
+        riskFactors: [
+          'Venture investments carry high risk of total loss',
+          'Illiquid investment with limited redemption rights',
+          'Concentrated exposure to early-stage technology companies'
+        ],
+        nextSteps: [
+          'Execute signature pages and return to fund administrator',
+          'Wire initial capital commitment as specified'
+        ]
+      },
+      'investor-letter': {
+        keyPoints: [
+          'Fund portfolio generated 18.5% net return for 2023',
+          'Market outlook remains cautiously optimistic for 2024',
+          'ESG initiatives integrated across all portfolio companies',
+          'Two new senior investment professionals joined the team'
+        ],
+        executiveSummary: 'The annual investor letter provides a comprehensive review of fund performance, market conditions, and strategic initiatives undertaken during 2023, while outlining the investment team\'s perspective for the coming year.',
+        financialHighlights: [
+          { label: '2023 Net Return', value: '+18.5%', trend: 'positive' },
+          { label: '5-Year IRR', value: '+14.2%', trend: 'positive' },
+          { label: 'Portfolio Companies', value: '23 active', trend: 'neutral' },
+          { label: 'Assets Under Management', value: '$850M', trend: 'positive' }
+        ],
+        nextSteps: [
+          'Annual investor meeting scheduled for March 2024',
+          'Q1 2024 quarterly report expected in April'
+        ]
+      }
+    };
+
+    const baseSummary = summaries[document.type] || {
+      keyPoints: [
+        'Document contains important fund-related information',
+        'Review recommended for investment decision making',
+        'Contains regulatory and compliance information'
+      ],
+      executiveSummary: `This ${document.type.replace('-', ' ')} document contains important information related to ${document.fundName || 'your investment'}. Review is recommended to stay informed about fund operations and performance.`,
+      nextSteps: [
+        'Review document contents thoroughly',
+        'Contact fund manager with any questions'
+      ]
+    };
+
+    return {
+      id: document.id,
+      title: document.title,
+      keyPoints: baseSummary.keyPoints || [],
+      executiveSummary: baseSummary.executiveSummary || '',
+      financialHighlights: baseSummary.financialHighlights,
+      riskFactors: baseSummary.riskFactors,
+      nextSteps: baseSummary.nextSteps,
+      generatedAt: new Date()
+    };
+  };
+
+  const handleAISummary = async (document: Document) => {
+    setSelectedDocumentForSummary(document);
+    setIsGeneratingSummary(true);
+    setDocumentSummary(null);
+    
+    try {
+      const summary = await generateAISummary(document);
+      setDocumentSummary(summary);
+    } catch (error) {
+      console.error('Failed to generate summary:', error);
+    } finally {
+      setIsGeneratingSummary(false);
+    }
+  };
+
+  const closeSummaryModal = () => {
+    setSelectedDocumentForSummary(null);
+    setDocumentSummary(null);
+    setIsGeneratingSummary(false);
   };
 
   const filteredDocuments = sampleDocuments.filter(doc => {
@@ -359,6 +533,13 @@ const DocumentVault: React.FC = () => {
 
                   {/* Actions */}
                   <div className="flex items-center space-x-2 ml-4">
+                    <button 
+                      onClick={() => handleAISummary(document)}
+                      className="p-2 text-purple-500 hover:text-purple-700 hover:bg-purple-50 rounded transition-colors"
+                      title="AI Summary"
+                    >
+                      <Brain className="w-4 h-4" />
+                    </button>
                     <button className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded transition-colors">
                       <Eye className="w-4 h-4" />
                     </button>
@@ -386,6 +567,195 @@ const DocumentVault: React.FC = () => {
           </div>
         )}
       </div>
+
+      {/* AI Summary Modal */}
+      {selectedDocumentForSummary && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-[9999] overflow-hidden">
+          <div className="bg-white rounded-xl shadow-xl max-w-4xl w-full max-h-[90vh] flex flex-col relative">
+            {/* Header */}
+            <div className="flex items-center justify-between p-4 sm:p-6 border-b border-gray-200 flex-shrink-0">
+              <div className="flex items-center space-x-3">
+                <Brain className="w-6 h-6 text-purple-600" />
+                <div>
+                  <h2 className="text-xl font-bold text-gray-900">AI Document Summary</h2>
+                  <p className="text-sm text-gray-600">Intelligent analysis powered by AI</p>
+                </div>
+              </div>
+              <button
+                onClick={closeSummaryModal}
+                className="p-2 hover:bg-gray-100 rounded-lg transition-colors flex-shrink-0"
+                title="Close"
+              >
+                <X className="w-5 h-5 text-gray-500" />
+              </button>
+            </div>
+
+            {/* Content */}
+            <div className="flex-1 overflow-y-auto p-4 sm:p-6 min-h-0">
+              {/* Document Info */}
+              <div className="bg-gray-50 rounded-lg p-4 mb-6">
+                <div className="flex items-start space-x-3">
+                  <div className="mt-1">
+                    {getTypeIcon(selectedDocumentForSummary.type)}
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="font-semibold text-gray-900 mb-1">
+                      {selectedDocumentForSummary.title}
+                    </h3>
+                    <div className="flex flex-wrap gap-2 text-sm text-gray-600">
+                      <span>{selectedDocumentForSummary.category}</span>
+                      <span>•</span>
+                      <span>{formatFileSize(selectedDocumentForSummary.size)}</span>
+                      <span>•</span>
+                      <span>{selectedDocumentForSummary.uploadDate.toLocaleDateString()}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Loading State */}
+              {isGeneratingSummary && (
+                <div className="text-center py-12">
+                  <div className="inline-flex items-center space-x-3">
+                    <div className="w-8 h-8 border-4 border-purple-600 border-t-transparent rounded-full animate-spin"></div>
+                    <div>
+                      <p className="text-lg font-medium text-gray-900">Generating AI Summary...</p>
+                      <p className="text-sm text-gray-600">Analyzing document content and extracting key insights</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Summary Content */}
+              {documentSummary && !isGeneratingSummary && (
+                <div className="space-y-6">
+                  {/* Executive Summary */}
+                  <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
+                    <h4 className="flex items-center space-x-2 font-semibold text-purple-900 mb-3">
+                      <Sparkles className="w-5 h-5" />
+                      <span>Executive Summary</span>
+                    </h4>
+                    <p className="text-purple-800 leading-relaxed">{documentSummary.executiveSummary}</p>
+                  </div>
+
+                  {/* Key Points */}
+                  <div>
+                    <h4 className="flex items-center space-x-2 font-semibold text-gray-900 mb-3">
+                      <ChevronRight className="w-5 h-5 text-blue-600" />
+                      <span>Key Points</span>
+                    </h4>
+                    <div className="grid grid-cols-1 gap-3">
+                      {documentSummary.keyPoints.map((point, index) => (
+                        <div key={index} className="flex items-start space-x-3 p-3 bg-blue-50 rounded-lg">
+                          <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
+                          <p className="text-blue-900 text-sm">{point}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Financial Highlights */}
+                  {documentSummary.financialHighlights && (
+                    <div>
+                      <h4 className="flex items-center space-x-2 font-semibold text-gray-900 mb-3">
+                        <ChevronRight className="w-5 h-5 text-green-600" />
+                        <span>Financial Highlights</span>
+                      </h4>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        {documentSummary.financialHighlights.map((highlight, index) => (
+                          <div key={index} className="bg-white border border-gray-200 rounded-lg p-4">
+                            <div className="flex items-center justify-between">
+                              <span className="text-sm font-medium text-gray-600">{highlight.label}</span>
+                              <span className={`text-lg font-bold ${
+                                highlight.trend === 'positive' ? 'text-green-600' :
+                                highlight.trend === 'negative' ? 'text-red-600' :
+                                'text-gray-900'
+                              }`}>
+                                {highlight.value}
+                              </span>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Risk Factors */}
+                  {documentSummary.riskFactors && (
+                    <div>
+                      <h4 className="flex items-center space-x-2 font-semibold text-gray-900 mb-3">
+                        <AlertCircle className="w-5 h-5 text-red-600" />
+                        <span>Risk Factors</span>
+                      </h4>
+                      <div className="space-y-2">
+                        {documentSummary.riskFactors.map((risk, index) => (
+                          <div key={index} className="flex items-start space-x-3 p-3 bg-red-50 border border-red-200 rounded-lg">
+                            <AlertCircle className="w-4 h-4 text-red-500 mt-0.5 flex-shrink-0" />
+                            <p className="text-red-800 text-sm">{risk}</p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Next Steps */}
+                  {documentSummary.nextSteps && (
+                    <div>
+                      <h4 className="flex items-center space-x-2 font-semibold text-gray-900 mb-3">
+                        <ChevronRight className="w-5 h-5 text-orange-600" />
+                        <span>Recommended Next Steps</span>
+                      </h4>
+                      <div className="space-y-2">
+                        {documentSummary.nextSteps.map((step, index) => (
+                          <div key={index} className="flex items-start space-x-3 p-3 bg-orange-50 border border-orange-200 rounded-lg">
+                            <div className="w-6 h-6 bg-orange-500 text-white rounded-full flex items-center justify-center text-xs font-bold mt-0.5 flex-shrink-0">
+                              {index + 1}
+                            </div>
+                            <p className="text-orange-800 text-sm">{step}</p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Metadata */}
+                  <div className="bg-gray-50 rounded-lg p-4 text-center">
+                    <p className="text-xs text-gray-500">
+                      Summary generated on {documentSummary.generatedAt.toLocaleDateString()} at {documentSummary.generatedAt.toLocaleTimeString()}
+                    </p>
+                    <p className="text-xs text-gray-500 mt-1">
+                      ✨ Powered by AI • Analysis is for informational purposes only
+                    </p>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Footer */}
+            {documentSummary && !isGeneratingSummary && (
+              <div className="border-t border-gray-200 p-4 sm:p-6 flex-shrink-0">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
+                  <div className="flex items-center space-x-2 text-sm text-gray-600">
+                    <Brain className="w-4 h-4 text-purple-500" />
+                    <span>AI-generated summary • Please verify important details</span>
+                  </div>
+                  <div className="flex space-x-3">
+                    <button
+                      onClick={closeSummaryModal}
+                      className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+                    >
+                      Close
+                    </button>
+                    <button className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors">
+                      View Full Document
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 };

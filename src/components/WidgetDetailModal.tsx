@@ -98,33 +98,33 @@ const WidgetDetailModal: React.FC<WidgetDetailModalProps> = ({ widget, isOpen, o
 
         {/* Detailed Fund Breakdown */}
         <div className="bg-white border border-gray-200 rounded-lg">
-          <div className="px-6 py-4 border-b border-gray-200">
+          <div className="px-4 sm:px-6 py-4 border-b border-gray-200">
             <h3 className="text-lg font-semibold text-gray-900">Fund-by-Fund Breakdown</h3>
           </div>
           <div className="overflow-x-auto">
-            <table className="w-full">
+            <table className="w-full min-w-[640px]">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fund</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">NAV</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Allocation</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total Return</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Monthly Change</th>
+                  <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fund</th>
+                  <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">NAV</th>
+                  <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Allocation</th>
+                  <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total Return</th>
+                  <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Monthly Change</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
                 {detailedBreakdown.map((fund, index) => (
                   <tr key={index} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="font-medium text-gray-900">{fund.fund}</div>
+                    <td className="px-3 sm:px-6 py-4">
+                      <div className="font-medium text-gray-900 text-sm sm:text-base break-words">{fund.fund}</div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    <td className="px-3 sm:px-6 py-4 text-sm text-gray-900 whitespace-nowrap">
                       {formatCurrency(fund.nav)}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    <td className="px-3 sm:px-6 py-4 text-sm text-gray-900 whitespace-nowrap">
                       {fund.allocation}%
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="px-3 sm:px-6 py-4">
                       <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                         fund.return >= 15 ? 'bg-green-100 text-green-800' :
                         fund.return >= 10 ? 'bg-yellow-100 text-yellow-800' :
@@ -133,14 +133,14 @@ const WidgetDetailModal: React.FC<WidgetDetailModalProps> = ({ widget, isOpen, o
                         {formatPercentage(fund.return)}
                       </span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="px-3 sm:px-6 py-4">
                       <div className="flex items-center">
                         {fund.change >= 0 ? (
-                          <TrendingUp className="w-4 h-4 text-green-500 mr-1" />
+                          <TrendingUp className="w-4 h-4 text-green-500 mr-1 flex-shrink-0" />
                         ) : (
-                          <TrendingDown className="w-4 h-4 text-red-500 mr-1" />
+                          <TrendingDown className="w-4 h-4 text-red-500 mr-1 flex-shrink-0" />
                         )}
-                        <span className={fund.change >= 0 ? 'text-green-600' : 'text-red-600'}>
+                        <span className={`text-sm whitespace-nowrap ${fund.change >= 0 ? 'text-green-600' : 'text-red-600'}`}>
                           {formatPercentage(fund.change)}
                         </span>
                       </div>
@@ -196,18 +196,18 @@ const WidgetDetailModal: React.FC<WidgetDetailModalProps> = ({ widget, isOpen, o
 
         {/* Monthly Performance Table */}
         <div className="bg-white border border-gray-200 rounded-lg">
-          <div className="px-6 py-4 border-b border-gray-200">
+          <div className="px-4 sm:px-6 py-4 border-b border-gray-200">
             <h3 className="text-lg font-semibold text-gray-900">Monthly Performance History</h3>
           </div>
           <div className="overflow-x-auto">
-            <table className="w-full">
+            <table className="w-full min-w-[700px]">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Month</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Portfolio Value</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Monthly Return</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Benchmark</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Outperformance</th>
+                  <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Month</th>
+                  <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Portfolio Value</th>
+                  <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Monthly Return</th>
+                  <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Benchmark</th>
+                  <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Outperformance</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
@@ -215,18 +215,18 @@ const WidgetDetailModal: React.FC<WidgetDetailModalProps> = ({ widget, isOpen, o
                   const outperformance = month.return - month.benchmark;
                   return (
                     <tr key={index} className="hover:bg-gray-50">
-                      <td className="px-6 py-4 whitespace-nowrap font-medium text-gray-900">{month.month}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{formatCurrency(month.value)}</td>
-                      <td className="px-6 py-4 whitespace-nowrap">
+                      <td className="px-3 sm:px-6 py-4 font-medium text-gray-900 text-sm whitespace-nowrap">{month.month}</td>
+                      <td className="px-3 sm:px-6 py-4 text-sm text-gray-900 whitespace-nowrap">{formatCurrency(month.value)}</td>
+                      <td className="px-3 sm:px-6 py-4">
                         <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                           month.return >= 0 ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
                         }`}>
                           {formatPercentage(month.return)}
                         </span>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{formatPercentage(month.benchmark)}</td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span className={`font-medium ${outperformance >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                      <td className="px-3 sm:px-6 py-4 text-sm text-gray-600 whitespace-nowrap">{formatPercentage(month.benchmark)}</td>
+                      <td className="px-3 sm:px-6 py-4">
+                        <span className={`font-medium text-sm whitespace-nowrap ${outperformance >= 0 ? 'text-green-600' : 'text-red-600'}`}>
                           {formatPercentage(outperformance)}
                         </span>
                       </td>
@@ -301,24 +301,24 @@ const WidgetDetailModal: React.FC<WidgetDetailModalProps> = ({ widget, isOpen, o
 
         {/* Detailed Fund Breakdown */}
         <div className="bg-white border border-gray-200 rounded-lg">
-          <div className="px-6 py-4 border-b border-gray-200">
+          <div className="px-4 sm:px-6 py-4 border-b border-gray-200">
             <h3 className="text-lg font-semibold text-gray-900">Fund-Level Detail</h3>
           </div>
-          <div className="p-6 space-y-6">
+          <div className="p-4 sm:p-6 space-y-6">
             {detailedAllocations.map((category, categoryIndex) => (
               <div key={categoryIndex}>
-                <h4 className="text-md font-medium text-gray-900 mb-3">{category.category}</h4>
+                <h4 className="text-sm sm:text-md font-medium text-gray-900 mb-3">{category.category}</h4>
                 <div className="space-y-3">
                   {category.funds.map((fund, fundIndex) => (
-                    <div key={fundIndex} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <div key={fundIndex} className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-3 bg-gray-50 rounded-lg space-y-2 sm:space-y-0">
                       <div className="flex items-center space-x-3">
-                        <Building className="w-5 h-5 text-gray-400" />
-                        <div>
-                          <p className="font-medium text-gray-900">{fund.name}</p>
+                        <Building className="w-5 h-5 text-gray-400 flex-shrink-0" />
+                        <div className="min-w-0">
+                          <p className="font-medium text-gray-900 text-sm sm:text-base break-words">{fund.name}</p>
                           <p className="text-sm text-gray-500">Vintage: {fund.vintage}</p>
                         </div>
                       </div>
-                      <div className="text-right">
+                      <div className="text-left sm:text-right flex-shrink-0">
                         <p className="font-medium text-gray-900">{formatCurrency(fund.value)}</p>
                         <p className="text-sm text-gray-500">
                           {((fund.value / category.value) * 100).toFixed(1)}% of category
@@ -396,24 +396,24 @@ const WidgetDetailModal: React.FC<WidgetDetailModalProps> = ({ widget, isOpen, o
             <h3 className="text-lg font-semibold text-gray-900">Transaction History</h3>
           </div>
           <div className="overflow-x-auto">
-            <table className="w-full">
+            <table className="w-full min-w-[800px]">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fund</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Description</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                  <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                  <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
+                  <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fund</th>
+                  <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
+                  <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Description</th>
+                  <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
                 {extendedTransactions.map((transaction, index) => (
                   <tr key={index} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       {new Date(transaction.date).toLocaleDateString()}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="px-3 sm:px-6 py-4 whitespace-nowrap">
                       <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                         transaction.type === 'Distribution' 
                           ? 'bg-green-100 text-green-800' 
@@ -422,20 +422,20 @@ const WidgetDetailModal: React.FC<WidgetDetailModalProps> = ({ widget, isOpen, o
                         {transaction.type}
                       </span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                      {transaction.fund}
+                    <td className="px-3 sm:px-6 py-4 text-sm font-medium text-gray-900">
+                      <div className="max-w-[150px] break-words">{transaction.fund}</div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-bold">
+                    <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm font-bold">
                       <span className={transaction.amount >= 0 ? 'text-green-600' : 'text-red-600'}>
                         {formatCurrency(Math.abs(transaction.amount))}
                       </span>
                     </td>
-                    <td className="px-6 py-4 text-sm text-gray-500 max-w-xs truncate">
-                      {transaction.description}
+                    <td className="px-3 sm:px-6 py-4 text-sm text-gray-500">
+                      <div className="max-w-[200px] break-words">{transaction.description}</div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="px-3 sm:px-6 py-4 whitespace-nowrap">
                       <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                        <CheckCircle className="w-3 h-3 mr-1" />
+                        <CheckCircle className="w-3 h-3 mr-1 flex-shrink-0" />
                         {transaction.status}
                       </span>
                     </td>
@@ -474,18 +474,18 @@ const WidgetDetailModal: React.FC<WidgetDetailModalProps> = ({ widget, isOpen, o
             <h3 className="text-lg font-semibold text-gray-900">Scenario Analysis</h3>
             <p className="text-sm text-gray-600">Potential portfolio outcomes under different market conditions</p>
           </div>
-          <div className="p-6">
+          <div className="p-4 sm:p-6">
             <div className="space-y-4">
               {riskScenarios.map((scenario, index) => (
-                <div key={index} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                <div key={index} className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-3 sm:p-4 bg-gray-50 rounded-lg space-y-2 sm:space-y-0">
                   <div className="flex-1">
-                    <div className="flex items-center space-x-3">
-                      <h4 className="font-medium text-gray-900">{scenario.scenario}</h4>
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-3 space-y-1 sm:space-y-0">
+                      <h4 className="font-medium text-gray-900 text-sm sm:text-base">{scenario.scenario}</h4>
                       <span className="text-sm text-gray-500">({scenario.probability} probability)</span>
                     </div>
-                    <p className="text-sm text-gray-600 mt-1">{scenario.description}</p>
+                    <p className="text-sm text-gray-600 mt-1 break-words">{scenario.description}</p>
                   </div>
-                  <div className="text-right">
+                  <div className="text-left sm:text-right flex-shrink-0">
                     <p className={`text-lg font-bold ${
                       parseFloat(scenario.portfolioReturn) >= 15 ? 'text-green-600' :
                       parseFloat(scenario.portfolioReturn) >= 0 ? 'text-yellow-600' :
@@ -506,17 +506,17 @@ const WidgetDetailModal: React.FC<WidgetDetailModalProps> = ({ widget, isOpen, o
           <div className="px-6 py-4 border-b border-gray-200">
             <h3 className="text-lg font-semibold text-gray-900">Risk Metrics Explained</h3>
           </div>
-          <div className="p-6">
+          <div className="p-4 sm:p-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {riskMetrics.map((metric, index) => (
-                <div key={index} className="border border-gray-200 rounded-lg p-4">
-                  <div className="flex items-start justify-between mb-2">
-                    <h4 className="font-medium text-gray-900">{metric.metric}</h4>
-                    <div className="flex items-center space-x-1">
-                      {metric.status === 'good' && <CheckCircle className="w-4 h-4 text-green-500" />}
-                      {metric.status === 'moderate' && <AlertTriangle className="w-4 h-4 text-yellow-500" />}
-                      {metric.status === 'low' && <Info className="w-4 h-4 text-blue-500" />}
-                      <span className={`text-sm font-medium ${
+                <div key={index} className="border border-gray-200 rounded-lg p-3 sm:p-4">
+                  <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between mb-2 space-y-2 sm:space-y-0">
+                    <h4 className="font-medium text-gray-900 text-sm sm:text-base break-words pr-0 sm:pr-2">{metric.metric}</h4>
+                    <div className="flex items-center space-x-1 flex-shrink-0">
+                      {metric.status === 'good' && <CheckCircle className="w-4 h-4 text-green-500 flex-shrink-0" />}
+                      {metric.status === 'moderate' && <AlertTriangle className="w-4 h-4 text-yellow-500 flex-shrink-0" />}
+                      {metric.status === 'low' && <Info className="w-4 h-4 text-blue-500 flex-shrink-0" />}
+                      <span className={`text-sm font-medium whitespace-nowrap ${
                         metric.status === 'good' ? 'text-green-600' :
                         metric.status === 'moderate' ? 'text-yellow-600' :
                         'text-blue-600'
@@ -526,7 +526,7 @@ const WidgetDetailModal: React.FC<WidgetDetailModalProps> = ({ widget, isOpen, o
                     </div>
                   </div>
                   <p className="text-xl font-bold text-gray-900 mb-2">{metric.value}</p>
-                  <p className="text-sm text-gray-600">{metric.description}</p>
+                  <p className="text-sm text-gray-600 break-words leading-relaxed">{metric.description}</p>
                 </div>
               ))}
             </div>
@@ -570,18 +570,18 @@ const WidgetDetailModal: React.FC<WidgetDetailModalProps> = ({ widget, isOpen, o
           <div className="px-6 py-4 border-b border-gray-200">
             <h3 className="text-lg font-semibold text-gray-900">Sector Analysis</h3>
           </div>
-          <div className="p-6 space-y-4">
+          <div className="p-4 sm:p-6 space-y-4">
             {marketData.map((sector, index) => (
-              <div key={index} className="border border-gray-200 rounded-lg p-4">
-                <div className="flex items-start justify-between mb-3">
+              <div key={index} className="border border-gray-200 rounded-lg p-3 sm:p-4">
+                <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between mb-3 space-y-2 sm:space-y-0">
                   <div className="flex items-center space-x-3">
-                    <div className={`w-4 h-4 rounded-full ${
+                    <div className={`w-4 h-4 rounded-full flex-shrink-0 ${
                       sector.trend === 'up' ? 'bg-green-500' : 
                       sector.trend === 'down' ? 'bg-red-500' : 'bg-yellow-500'
                     }`}></div>
-                    <h4 className="font-medium text-gray-900">{sector.sector}</h4>
+                    <h4 className="font-medium text-gray-900 text-sm sm:text-base">{sector.sector}</h4>
                   </div>
-                  <div className="text-right">
+                  <div className="text-left sm:text-right">
                     <span className={`text-lg font-bold ${
                       sector.trend === 'up' ? 'text-green-600' : 
                       sector.trend === 'down' ? 'text-red-600' : 'text-yellow-600'
@@ -591,11 +591,11 @@ const WidgetDetailModal: React.FC<WidgetDetailModalProps> = ({ widget, isOpen, o
                     <p className="text-sm text-gray-500">Market Cap: ${sector.marketCap}</p>
                   </div>
                 </div>
-                <p className="text-sm text-gray-600 mb-3">{sector.details}</p>
+                <p className="text-sm text-gray-600 mb-3 break-words">{sector.details}</p>
                 <div className="flex flex-wrap gap-2">
-                  <span className="text-xs text-gray-500">Key Players:</span>
+                  <span className="text-xs text-gray-500 flex-shrink-0">Key Players:</span>
                   {sector.leaders.map((leader, i) => (
-                    <span key={i} className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded">
+                    <span key={i} className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded whitespace-nowrap">
                       {leader}
                     </span>
                   ))}
@@ -663,31 +663,31 @@ const WidgetDetailModal: React.FC<WidgetDetailModalProps> = ({ widget, isOpen, o
           <div className="px-6 py-4 border-b border-gray-200">
             <h3 className="text-lg font-semibold text-gray-900">News Analysis</h3>
           </div>
-          <div className="p-6 space-y-6">
+          <div className="p-4 sm:p-6 space-y-6">
             {newsArticles.map((article, index) => (
-              <div key={index} className="border border-gray-200 rounded-lg p-4">
-                <div className="flex items-start justify-between mb-3">
-                  <h4 className="font-medium text-gray-900 flex-1 pr-4">{article.title}</h4>
-                  <div className="flex items-center space-x-2">
-                    <span className={`px-2 py-1 text-xs font-medium rounded ${
+              <div key={index} className="border border-gray-200 rounded-lg p-3 sm:p-4">
+                <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between mb-3 space-y-2 sm:space-y-0">
+                  <h4 className="font-medium text-gray-900 text-sm sm:text-base break-words pr-0 sm:pr-4">{article.title}</h4>
+                  <div className="flex items-center space-x-2 flex-shrink-0">
+                    <span className={`px-2 py-1 text-xs font-medium rounded whitespace-nowrap ${
                       article.impact === 'Positive' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
                     }`}>
                       {article.impact}
                     </span>
-                    <span className={`px-2 py-1 text-xs font-medium rounded ${
+                    <span className={`px-2 py-1 text-xs font-medium rounded whitespace-nowrap ${
                       article.relevance === 'High' ? 'bg-purple-100 text-purple-800' : 'bg-gray-100 text-gray-800'
                     }`}>
                       {article.relevance}
                     </span>
                   </div>
                 </div>
-                <div className="flex items-center space-x-4 mb-3 text-sm text-gray-600">
-                  <span>{article.source}</span>
-                  <span>•</span>
+                <div className="flex flex-col sm:flex-row sm:items-center space-y-1 sm:space-y-0 sm:space-x-4 mb-3 text-sm text-gray-600">
+                  <span className="font-medium">{article.source}</span>
+                  <span className="hidden sm:inline">•</span>
                   <span>{new Date(article.date).toLocaleDateString()}</span>
                 </div>
-                <p className="text-sm font-medium text-gray-900 mb-2">{article.summary}</p>
-                <p className="text-sm text-gray-600">{article.content}</p>
+                <p className="text-sm font-medium text-gray-900 mb-2 break-words">{article.summary}</p>
+                <p className="text-sm text-gray-600 break-words leading-relaxed">{article.content}</p>
               </div>
             ))}
           </div>
@@ -751,34 +751,38 @@ const WidgetDetailModal: React.FC<WidgetDetailModalProps> = ({ widget, isOpen, o
             <h3 className="text-lg font-semibold text-gray-900">Detailed Cash Flow History</h3>
           </div>
           <div className="overflow-x-auto">
-            <table className="w-full">
+            <table className="w-full min-w-[800px]">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Month</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Inflows</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Outflows</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Net</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Primary Source</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Primary Use</th>
+                  <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Month</th>
+                  <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Inflows</th>
+                  <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Outflows</th>
+                  <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Net</th>
+                  <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Primary Source</th>
+                  <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Primary Use</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
                 {extendedCashFlow.map((flow, index) => (
                   <tr key={index} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap font-medium text-gray-900">{flow.month}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-green-600 font-medium">
+                    <td className="px-3 sm:px-6 py-4 whitespace-nowrap font-medium text-gray-900 text-sm">{flow.month}</td>
+                    <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-green-600 font-medium">
                       {flow.inflow > 0 ? formatCurrency(flow.inflow) : '-'}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-red-600 font-medium">
+                    <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-red-600 font-medium">
                       {flow.outflow < 0 ? formatCurrency(Math.abs(flow.outflow)) : '-'}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-bold">
+                    <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm font-bold">
                       <span className={flow.net >= 0 ? 'text-green-600' : 'text-red-600'}>
                         {formatCurrency(flow.net)}
                       </span>
                     </td>
-                    <td className="px-6 py-4 text-sm text-gray-600 max-w-xs truncate">{flow.source}</td>
-                    <td className="px-6 py-4 text-sm text-gray-600 max-w-xs truncate">{flow.use}</td>
+                    <td className="px-3 sm:px-6 py-4 text-sm text-gray-600">
+                      <div className="max-w-[200px] break-words">{flow.source}</div>
+                    </td>
+                    <td className="px-3 sm:px-6 py-4 text-sm text-gray-600">
+                      <div className="max-w-[200px] break-words">{flow.use}</div>
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -846,8 +850,10 @@ const WidgetDetailModal: React.FC<WidgetDetailModalProps> = ({ widget, isOpen, o
         </div>
 
         {/* Content - Scrollable */}
-        <div className="flex-1 overflow-y-auto p-4 sm:p-6">
-          {renderDetailContent()}
+        <div className="flex-1 overflow-y-auto p-4 sm:p-6 min-h-0">
+          <div className="max-w-none">
+            {renderDetailContent()}
+          </div>
         </div>
       </div>
     </div>
