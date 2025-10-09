@@ -118,18 +118,18 @@ const AddWidgetModal: React.FC<AddWidgetModalProps> = ({ isOpen, onClose }) => {
       'recent-transactions': {
         data: {
           transactions: [
-            { date: '2024-01-15', type: 'Capital Call', fund: 'Tech Growth Fund III', amount: -50000 },
-            { date: '2024-01-10', type: 'Distribution', fund: 'Real Estate Fund II', amount: 75000 },
-            { date: '2024-01-05', type: 'Capital Call', fund: 'Healthcare Fund I', amount: -25000 },
+            { date: '2025-09-15', type: 'Capital Call', fund: 'Tech Growth Fund III', amount: -2000000 },
+            { date: '2025-09-10', type: 'Distribution', fund: 'Real Estate Fund II', amount: 1500000 },
+            { date: '2025-09-05', type: 'Capital Call', fund: 'Healthcare Fund I', amount: -1200000 },
           ]
         }
       },
       'news-feed': {
         data: {
           news: [
-            { title: 'Private Equity Market Outlook', source: 'Financial Times', date: '2024-01-16' },
-            { title: 'Real Estate Investment Trends', source: 'WSJ', date: '2024-01-15' },
-            { title: 'VC Funding Reaches New High', source: 'TechCrunch', date: '2024-01-14' },
+            { title: 'Private Equity Market Outlook', source: 'Financial Times', date: '2025-10-08' },
+            { title: 'Real Estate Investment Trends', source: 'WSJ', date: '2025-10-07' },
+            { title: 'VC Funding Reaches New High', source: 'TechCrunch', date: '2025-10-06' },
           ]
         }
       },
@@ -156,10 +156,10 @@ const AddWidgetModal: React.FC<AddWidgetModalProps> = ({ isOpen, onClose }) => {
       'cash-flow': {
         data: {
           cashFlow: [
-            { month: 'Jan', inflow: 75000, outflow: -50000, net: 25000 },
-            { month: 'Feb', inflow: 0, outflow: -30000, net: -30000 },
-            { month: 'Mar', inflow: 100000, outflow: -25000, net: 75000 },
-            { month: 'Apr', inflow: 50000, outflow: -40000, net: 10000 },
+            { month: 'Jul', inflow: 1500000, outflow: -800000, net: 700000 },
+            { month: 'Aug', inflow: 2000000, outflow: -1200000, net: 800000 },
+            { month: 'Sep', inflow: 1200000, outflow: -900000, net: 300000 },
+            { month: 'Oct', inflow: 2500000, outflow: -1800000, net: 700000 },
           ]
         }
       },
@@ -168,9 +168,9 @@ const AddWidgetModal: React.FC<AddWidgetModalProps> = ({ isOpen, onClose }) => {
           events: [
             {
               id: '1',
-              title: 'Q1 2024 Investor Meeting',
-              date: new Date('2024-02-15T14:00:00'),
-              endDate: new Date('2024-02-15T16:00:00'),
+              title: 'Q4 2025 Investor Meeting',
+              date: new Date('2025-10-15T14:00:00'),
+              endDate: new Date('2025-10-15T16:00:00'),
               type: 'meeting',
               location: 'Virtual Meeting',
               attendees: ['John Smith', 'Sarah Chen'],
@@ -181,7 +181,7 @@ const AddWidgetModal: React.FC<AddWidgetModalProps> = ({ isOpen, onClose }) => {
             {
               id: '2',
               title: 'Healthcare Fund I Capital Call',
-              date: new Date('2024-02-20T09:00:00'),
+              date: new Date('2025-10-20T09:00:00'),
               type: 'capital-call',
               fundName: 'Healthcare Fund I',
               priority: 'high',
@@ -190,7 +190,7 @@ const AddWidgetModal: React.FC<AddWidgetModalProps> = ({ isOpen, onClose }) => {
             {
               id: '3',
               title: 'Real Estate Fund II Distribution',
-              date: new Date('2024-02-28T10:00:00'),
+              date: new Date('2025-10-28T10:00:00'),
               type: 'distribution',
               fundName: 'Real Estate Fund II',
               priority: 'medium',

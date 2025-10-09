@@ -93,9 +93,9 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ activeTab = 'dashboard' }
         h: 3,
         data: {
           transactions: [
-            { date: '2024-01-15', type: 'Capital Call', fund: 'Tech Growth Fund III', amount: -50000 },
-            { date: '2024-01-10', type: 'Distribution', fund: 'Real Estate Fund II', amount: 75000 },
-            { date: '2024-01-05', type: 'Capital Call', fund: 'Healthcare Fund I', amount: -25000 },
+            { date: '2025-09-15', type: 'Capital Call', fund: 'Tech Growth Fund III', amount: -2000000 },
+            { date: '2025-09-10', type: 'Distribution', fund: 'Real Estate Fund II', amount: 1500000 },
+            { date: '2025-09-05', type: 'Capital Call', fund: 'Healthcare Fund I', amount: -1200000 },
           ]
         }
       },
@@ -105,9 +105,9 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ activeTab = 'dashboard' }
         h: 4,
         data: {
           news: [
-            { title: 'Private Equity Market Outlook', source: 'Financial Times', date: '2024-01-16' },
-            { title: 'Real Estate Investment Trends', source: 'WSJ', date: '2024-01-15' },
-            { title: 'VC Funding Reaches New High', source: 'TechCrunch', date: '2024-01-14' },
+            { title: 'Private Equity Market Outlook', source: 'Financial Times', date: '2025-10-08' },
+            { title: 'Real Estate Investment Trends', source: 'WSJ', date: '2025-10-07' },
+            { title: 'VC Funding Reaches New High', source: 'TechCrunch', date: '2025-10-06' },
           ]
         }
       },
@@ -143,10 +143,10 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ activeTab = 'dashboard' }
         h: 3,
         data: {
           cashFlow: [
-            { month: 'Jan', inflow: 75000, outflow: -50000, net: 25000 },
-            { month: 'Feb', inflow: 0, outflow: -30000, net: -30000 },
-            { month: 'Mar', inflow: 100000, outflow: -25000, net: 75000 },
-            { month: 'Apr', inflow: 50000, outflow: -40000, net: 10000 },
+            { month: 'Jul', inflow: 1500000, outflow: -800000, net: 700000 },
+            { month: 'Aug', inflow: 2000000, outflow: -1200000, net: 800000 },
+            { month: 'Sep', inflow: 1200000, outflow: -900000, net: 300000 },
+            { month: 'Oct', inflow: 2500000, outflow: -1800000, net: 700000 },
           ]
         }
       },
@@ -158,9 +158,9 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ activeTab = 'dashboard' }
           events: [
             {
               id: '1',
-              title: 'Q1 2024 Investor Meeting',
-              date: new Date('2024-02-15T14:00:00'),
-              endDate: new Date('2024-02-15T16:00:00'),
+              title: 'Q4 2025 Investor Meeting',
+              date: new Date('2025-10-15T14:00:00'),
+              endDate: new Date('2025-10-15T16:00:00'),
               type: 'meeting',
               location: 'Virtual Meeting',
               attendees: ['John Smith', 'Sarah Chen', 'Michael Rodriguez', 'Emma Thompson'],
@@ -175,7 +175,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ activeTab = 'dashboard' }
             {
               id: '2',
               title: 'Healthcare Fund I Capital Call',
-              date: new Date('2024-02-20T09:00:00'),
+              date: new Date('2025-10-20T09:00:00'),
               type: 'capital-call',
               fundName: 'Healthcare Fund I',
               isReminder: true,
@@ -187,7 +187,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ activeTab = 'dashboard' }
             {
               id: '3',
               title: 'Real Estate Fund II Distribution',
-              date: new Date('2024-02-28T10:00:00'),
+              date: new Date('2025-10-28T10:00:00'),
               type: 'distribution',
               fundName: 'Real Estate Fund II',
               isReminder: true,
@@ -332,31 +332,31 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ activeTab = 'dashboard' }
     if (activeTab === 'calendar') {
       if (message.includes('next week') || message.includes('upcoming') || message.includes('this week')) {
         return {
-          message: '📅 **Upcoming Events This Week**\n\n**Today - Friday:**\n• Q1 2024 Investor Meeting - Tomorrow at 2:00 PM (Virtual)\n• Healthcare Fund I Due Diligence Call - Thursday at 11:00 AM\n\n**Capital Calls:**\n• Real Estate Fund II: $50,000 due Feb 15, 2024\n\n**Reminders Set:**\n✅ Q1 meeting reminder (1 hour before)\n✅ Capital call reminder (24 hours before)\n\nWould you like me to add any new reminders or events?'
+          message: '📅 **Upcoming Events This Week**\n\n**This Week:**\n• Q4 2025 Investor Meeting - Oct 15 at 2:00 PM (Virtual)\n• Healthcare Fund I Capital Call - Oct 20 at 9:00 AM\n• Real Estate Fund II Distribution - Oct 28 at 10:00 AM\n\n**Reminders Set:**\n✅ Q4 meeting reminder (1 hour before)\n✅ Capital call reminder (24 hours before)\n\nWould you like me to add any new reminders or events?'
         };
       }
 
       if (message.includes('capital call') || message.includes('funding') || message.includes('calls')) {
         return {
-          message: '💰 **Capital Call Calendar**\n\n**Upcoming Calls:**\n• Real Estate Fund II: $50,000 due Feb 15, 2024\n• Venture Fund IV: $25,000 due Mar 1, 2024\n\n**Recent Completed:**\n• Healthcare Fund I: $25,000 (Jan 2024) ✅\n• Tech Growth Fund III: $50,000 (Dec 2023) ✅\n\n**Calendar Integration:**\n• All calls automatically added to your calendar\n• Reminders set 7 days and 2 days before due dates\n• Wire transfer instructions included in event details\n\nNeed help scheduling or getting details about any specific call?'
+          message: '💰 **Capital Call Calendar**\n\n**Upcoming Calls:**\n• Healthcare Fund I: $2.5M due Oct 20, 2025\n• Venture Fund IV: $1.8M due Nov 5, 2025\n\n**Recent Completed:**\n• Real Estate Fund II: $1.2M (Sep 2025) ✅\n• Tech Growth Fund III: $2.0M (Aug 2025) ✅\n\n**Calendar Integration:**\n• All calls automatically added to your calendar\n• Reminders set 7 days and 2 days before due dates\n• Wire transfer instructions included in event details\n\nNeed help scheduling or getting details about any specific call?'
         };
       }
 
       if (message.includes('meeting') || message.includes('schedule') || message.includes('book')) {
         return {
-          message: '🤝 **Meeting Management**\n\n**Scheduled Meetings:**\n• Q1 2024 Investor Meeting - Feb 15 at 2:00 PM\n• Due Diligence Call - Mar 5 at 11:00 AM\n• Private Equity Conference - Mar 10-12 (New York)\n\n**Available Actions:**\n• View meeting details and join links\n• Add new meetings to calendar\n• Set custom reminders\n• Invite attendees\n• Reschedule existing meetings\n\nWhat would you like to do with your meetings?'
+          message: '🤝 **Meeting Management**\n\n**Scheduled Meetings:**\n• Q4 2025 Investor Meeting - Oct 15 at 2:00 PM\n• Due Diligence Call - Nov 5 at 11:00 AM\n• Private Equity Conference - Nov 10-12 (New York)\n\n**Available Actions:**\n• View meeting details and join links\n• Add new meetings to calendar\n• Set custom reminders\n• Invite attendees\n• Reschedule existing meetings\n\nWhat would you like to do with your meetings?'
         };
       }
 
       if (message.includes('reminder') || message.includes('remind') || message.includes('alert')) {
         return {
-          message: '🔔 **Calendar Reminders**\n\n**Active Reminders:**\n• Q1 Investor Meeting: 1 hour before (Feb 15, 1:00 PM)\n• Healthcare Fund Capital Call: 24 hours before (Feb 14, 9:00 AM)\n• ESG Webinar: 2 hours before (Mar 8, 1:00 PM)\n\n**Reminder Options:**\n• 15 minutes, 30 minutes, 1 hour before\n• 1 day, 2 days, 1 week before\n• Custom timing available\n• Email and in-app notifications\n\nWould you like to add a reminder to any upcoming events?'
+          message: '🔔 **Calendar Reminders**\n\n**Active Reminders:**\n• Q4 Investor Meeting: 1 hour before (Oct 15, 1:00 PM)\n• Healthcare Fund Capital Call: 24 hours before (Oct 19, 9:00 AM)\n• ESG Webinar: 2 hours before (Sep 18, 1:00 PM)\n\n**Reminder Options:**\n• 15 minutes, 30 minutes, 1 hour before\n• 1 day, 2 days, 1 week before\n• Custom timing available\n• Email and in-app notifications\n\nWould you like to add a reminder to any upcoming events?'
         };
       }
 
       if (message.includes('distribution') || message.includes('payout')) {
         return {
-          message: '💸 **Distribution Calendar**\n\n**Upcoming Distributions:**\n• Real Estate Fund II: $75,000 expected Feb 28, 2024\n• Tech Growth Fund III: Quarterly distribution Mar 15, 2024\n\n**Recent Distributions:**\n• Real Estate Fund II: $75,000 (Jan 10, 2024) ✅\n• Healthcare Fund I: $32,000 (Dec 15, 2023) ✅\n\n**Calendar Features:**\n• Automatic calendar events for distribution dates\n• Wire transfer details included\n• Tax implications noted in event descriptions\n\nNeed details about any specific distribution?'
+          message: '💸 **Distribution Calendar**\n\n**Upcoming Distributions:**\n• Real Estate Fund II: $1.8M expected Oct 28, 2025\n• Tech Growth Fund III: Quarterly distribution Nov 15, 2025\n\n**Recent Distributions:**\n• Healthcare Fund I: $1.5M (Sep 10, 2025) ✅\n• Venture Fund IV: $890K (Aug 15, 2025) ✅\n\n**Calendar Features:**\n• Automatic calendar events for distribution dates\n• Wire transfer details included\n• Tax implications noted in event descriptions\n\nNeed details about any specific distribution?'
         };
       }
 
@@ -437,7 +437,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ activeTab = 'dashboard' }
 
       if (message.includes('capital call') || message.includes('next call') || message.includes('funding')) {
         return {
-          message: '💰 **Upcoming Capital Calls**\n\n**Next 30 Days:**\n• Real Estate Fund II: $50,000 due Feb 15, 2024\n• Venture Fund IV: $25,000 due Mar 1, 2024\n\n**Recent Completed:**\n• Healthcare Fund I: $25,000 (Jan 2024) ✅\n• Tech Growth Fund III: $50,000 (Dec 2023) ✅\n\n📊 **Summary:**\n• Total upcoming: $75,000\n• Remaining commitments: $340,000\n• Average quarterly calls: $62,500\n\n🔔 **Automated reminders** are set for 7 days and 2 days before each due date.'
+          message: '💰 **Upcoming Capital Calls**\n\n**Next 30 Days:**\n• Healthcare Fund I: $2.5M due Oct 20, 2025\n• Real Estate Fund II: $1.8M due Oct 28, 2025\n\n**Recent Completed:**\n• Venture Fund IV: $1.2M (Sep 2025) ✅\n• Tech Growth Fund III: $2.0M (Aug 2025) ✅\n\n📊 **Summary:**\n• Total upcoming: $4.3M\n• Remaining commitments: $12.5M\n• Average quarterly calls: $2.1M\n\n🔔 **Automated reminders** are set for 7 days and 2 days before each due date.'
         };
       }
 
@@ -609,12 +609,12 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ activeTab = 'dashboard' }
         'portfolio-overview': 'Your total portfolio value is $2.5M with a 15.8% total return and 2.3% monthly growth. Your investments are well-diversified across multiple asset classes.',
         'performance-chart': 'Your portfolio has shown strong performance over the past 5 months, with steady growth from $2.2M to $2.5M. The trend indicates consistent positive returns.',
         'asset-allocation': 'Your portfolio is allocated across Private Equity (40%), Real Estate (30%), Venture Capital (20%), and Hedge Funds (10%). This shows good diversification.',
-        'recent-transactions': 'Recent activity includes a $75,000 distribution from Real Estate Fund II and capital calls totaling $75,000 from Tech Growth Fund III and Healthcare Fund I.',
+        'recent-transactions': 'Recent activity includes a $1.5M distribution from Real Estate Fund II and capital calls totaling $3.2M from Tech Growth Fund III and Healthcare Fund I.',
         'market-trends': 'Current market trends show Technology (+12.5%) and Healthcare (+8.3%) performing strongly, while Real Estate remains stable (+2.1%) and Energy is down (-3.2%).',
         'risk-analysis': 'Your portfolio shows moderate risk with a Beta of 0.85, Sharpe Ratio of 1.42, and 12.1% volatility. The risk profile indicates good risk-adjusted returns.',
-        'cash-flow': 'Your cash flow has been positive with $80,000 net inflows over the past quarter. January showed $25,000 net inflow, with some outflow in February due to capital calls.',
+        'cash-flow': 'Your cash flow has been strong with $2.5M net inflows over the past quarter. October shows $700K net inflow, with significant activity in August and September.',
         'news-feed': 'Latest investment news includes updates on Private Equity market outlook, Real Estate investment trends, and VC funding reaching new highs.',
-        'upcoming-events': 'You have several upcoming events including the Q1 2024 Investor Meeting on Feb 15, a Healthcare Fund I Capital Call on Feb 20, and a Real Estate Fund II Distribution on Feb 28.'
+        'upcoming-events': 'You have several upcoming events including the Q4 2025 Investor Meeting on Oct 15, a Healthcare Fund I Capital Call on Oct 20, and a Real Estate Fund II Distribution on Oct 28.'
       };
 
       return {
