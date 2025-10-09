@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Send, Bot, User, Plus, Edit, Trash2 } from 'lucide-react';
-import { ChatMessage, Widget, WidgetAction } from '../types';
+import { ChatMessage, Widget, WidgetAction, VisualizationFormat } from '../types';
 import { useDashboard } from '../context/DashboardContext';
 
 interface ChatInterfaceProps {
@@ -33,7 +33,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ activeTab = 'dashboard' }
     } else if (activeTab === 'communication') {
       initialMessage = 'Hello! I\'m your communication assistant. I can help you with messaging, task automation, and staying connected with your fund managers. I can:\n\n• Schedule meetings: "Book a call with Sarah Chen"\n• Request forms: "I need updated tax forms"\n• Update information: "Change my contact details"\n• Answer questions: "When is my next capital call?"\n• Send messages: "Message the IR team about distributions"\n\nHow can I assist you today?';
     } else {
-      initialMessage = 'Hello! I\'m your investment assistant. I can help you with portfolio insights, performance analysis, and manage your dashboard widgets. I can:\n\n• Add widgets: "show me market trends" or "add risk analysis"\n• Edit widgets: "change performance chart to 3 months"\n• Remove widgets: "remove the cash flow widget"\n• Answer investment questions about your portfolio\n\nWhat would you like to explore today?';
+      initialMessage = 'Hello! I\'m your investment assistant. I can help you with portfolio insights, performance analysis, and manage your dashboard widgets. I can:\n\n• Add widgets: "show me market trends" or "add risk analysis"\n• Edit widgets: "change performance chart to 3 months"\n• Change formats: "convert performance chart to line chart" or "show asset allocation as table"\n• Remove widgets: "remove the cash flow widget"\n• Answer investment questions about your portfolio\n\nWhat would you like to explore today?';
     }
 
     setMessages([
@@ -46,12 +46,13 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ activeTab = 'dashboard' }
     ]);
   }, [activeTab]);
 
-  const createWidgetData = (type: Widget['type']) => {
-    const widgetTemplates = {
+  const createWidgetData = (type: Widget['type']): Partial<Widget> => {
+    const widgetTemplates: Record<Widget['type'], Partial<Widget>> = {
       'portfolio-overview': {
         title: 'Portfolio Overview',
         w: 6,
         h: 4,
+        visualizationFormat: 'cards' as VisualizationFormat,
         data: {
           totalValue: 2500000,
           totalReturn: 15.8,
@@ -62,6 +63,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ activeTab = 'dashboard' }
         title: 'Performance Chart',
         w: 6,
         h: 4,
+        visualizationFormat: 'bar-chart' as VisualizationFormat,
         data: {
           chartData: [
             { month: 'Jan', value: 2200000 },
@@ -76,6 +78,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ activeTab = 'dashboard' }
         title: 'Asset Allocation',
         w: 4,
         h: 3,
+        visualizationFormat: 'pie-chart' as VisualizationFormat,
         data: {
           allocations: [
             { category: 'Private Equity', percentage: 40, value: 1000000 },
@@ -89,6 +92,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ activeTab = 'dashboard' }
         title: 'Recent Transactions',
         w: 8,
         h: 3,
+        visualizationFormat: 'list' as VisualizationFormat,
         data: {
           transactions: [
             { date: '2024-01-15', type: 'Capital Call', fund: 'Tech Growth Fund III', amount: -50000 },
@@ -101,6 +105,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ activeTab = 'dashboard' }
         title: 'Market News',
         w: 6,
         h: 4,
+        visualizationFormat: 'list' as VisualizationFormat,
         data: {
           news: [
             { title: 'Private Equity Market Outlook', source: 'Financial Times', date: '2024-01-16' },
@@ -113,6 +118,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ activeTab = 'dashboard' }
         title: 'Market Trends',
         w: 6,
         h: 4,
+        visualizationFormat: 'bar-chart' as VisualizationFormat,
         data: {
           trends: [
             { sector: 'Technology', trend: 'up', percentage: 12.5 },
@@ -126,6 +132,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ activeTab = 'dashboard' }
         title: 'Risk Analysis',
         w: 4,
         h: 3,
+        visualizationFormat: 'table' as VisualizationFormat,
         data: {
           riskMetrics: [
             { metric: 'Portfolio Beta', value: 0.85, status: 'low' },
@@ -139,6 +146,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ activeTab = 'dashboard' }
         title: 'Cash Flow',
         w: 6,
         h: 3,
+        visualizationFormat: 'bar-chart' as VisualizationFormat,
         data: {
           cashFlow: [
             { month: 'Jan', inflow: 75000, outflow: -50000, net: 25000 },
@@ -208,8 +216,26 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ activeTab = 'dashboard' }
     return bestMatch ? { type: bestMatch.type, confidence: Math.min(bestMatch.score * 0.2, 1) } : null;
   };
 
-  const detectAction = (message: string): 'add' | 'update' | 'remove' | 'info' => {
+  const detectAction = (message: string): 'add' | 'update' | 'remove' | 'info' | 'format-change' => {
     const msg = message.toLowerCase();
+    
+    // Check for format change patterns first
+    const formatChangePatterns = [
+      'change to', 'convert to', 'make it a', 'switch to', 'turn into', 'display as',
+      'show as a', 'visualize as', 'format as', 'render as'
+    ];
+    
+    const chartTypePatterns = [
+      'bar chart', 'line chart', 'pie chart', 'table', 'list', 'cards',
+      'donut chart', 'area chart', 'graph', 'chart'
+    ];
+    
+    const hasFormatChange = formatChangePatterns.some(pattern => msg.includes(pattern));
+    const hasChartType = chartTypePatterns.some(pattern => msg.includes(pattern));
+    
+    if (hasFormatChange && hasChartType) {
+      return 'format-change';
+    }
     
     // Action keywords with priorities
     const actionPatterns = {
@@ -232,7 +258,30 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ activeTab = 'dashboard' }
       }
     }
 
-    return bestAction.action as 'add' | 'update' | 'remove' | 'info';
+    return bestAction.action as 'add' | 'update' | 'remove' | 'info' | 'format-change';
+  };
+
+  const detectVisualizationFormat = (message: string): VisualizationFormat | null => {
+    const msg = message.toLowerCase();
+    
+    const formatPatterns: Record<VisualizationFormat, string[]> = {
+      'bar-chart': ['bar chart', 'bar graph', 'bars', 'column chart', 'column graph'],
+      'line-chart': ['line chart', 'line graph', 'trend line', 'time series'],
+      'pie-chart': ['pie chart', 'pie graph', 'pie'],
+      'donut-chart': ['donut chart', 'donut graph', 'doughnut chart'],
+      'area-chart': ['area chart', 'area graph', 'filled line'],
+      'table': ['table', 'grid', 'tabular', 'rows and columns'],
+      'cards': ['cards', 'card view', 'card layout'],
+      'list': ['list', 'list view', 'bullet points']
+    };
+    
+    for (const [format, patterns] of Object.entries(formatPatterns)) {
+      if (patterns.some(pattern => msg.includes(pattern))) {
+        return format as VisualizationFormat;
+      }
+    }
+    
+    return null;
   };
 
   const findTargetWidget = (message: string): Widget | null => {
@@ -398,6 +447,80 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ activeTab = 'dashboard' }
     const action = detectAction(message);
     const widgetIntent = detectWidgetIntent(message);
     const targetWidget = findTargetWidget(message);
+    const newFormat = detectVisualizationFormat(message);
+
+    // Handle widget format changes
+    if (action === 'format-change' && targetWidget && newFormat) {
+      const formatNames: Record<VisualizationFormat, string> = {
+        'bar-chart': 'bar chart',
+        'line-chart': 'line chart',
+        'pie-chart': 'pie chart',
+        'donut-chart': 'donut chart',
+        'area-chart': 'area chart',
+        'table': 'table',
+        'cards': 'card layout',
+        'list': 'list view'
+      };
+      
+      // Check if the format change is compatible with the widget type
+      const compatibleFormats: Record<Widget['type'], VisualizationFormat[]> = {
+        'performance-chart': ['bar-chart', 'line-chart', 'area-chart', 'table'],
+        'asset-allocation': ['pie-chart', 'donut-chart', 'bar-chart', 'table', 'cards'],
+        'recent-transactions': ['table', 'list', 'cards'],
+        'market-trends': ['bar-chart', 'line-chart', 'table', 'cards'],
+        'risk-analysis': ['table', 'cards', 'bar-chart'],
+        'cash-flow': ['bar-chart', 'line-chart', 'area-chart', 'table'],
+        'news-feed': ['list', 'cards', 'table'],
+        'portfolio-overview': ['cards', 'table']
+      };
+      
+      const isCompatible = compatibleFormats[targetWidget.type]?.includes(newFormat);
+      
+      if (!isCompatible) {
+        const validFormats = compatibleFormats[targetWidget.type] || [];
+        const validFormatNames = validFormats.map(f => formatNames[f]).join(', ');
+        return {
+          message: `I can't display ${targetWidget.title} as a ${formatNames[newFormat]}. However, I can show it as: ${validFormatNames}. Which format would you prefer?`
+        };
+      }
+      
+      return {
+        message: `Perfect! I've changed the ${targetWidget.title} to display as a ${formatNames[newFormat]}. The data is now visualized in a more suitable format for your needs.`,
+        widgetAction: {
+          type: 'format-change',
+          widgetId: targetWidget.id,
+          newFormat: newFormat,
+          updateType: 'format'
+        }
+      };
+    }
+    
+    // Handle format change requests without specific widget target
+    if (action === 'format-change' && newFormat && widgetIntent) {
+      const widgetOfType = widgets.find(w => w.type === widgetIntent.type);
+      if (widgetOfType) {
+        const formatNames: Record<VisualizationFormat, string> = {
+          'bar-chart': 'bar chart',
+          'line-chart': 'line chart', 
+          'pie-chart': 'pie chart',
+          'donut-chart': 'donut chart',
+          'area-chart': 'area chart',
+          'table': 'table',
+          'cards': 'card layout',
+          'list': 'list view'
+        };
+        
+        return {
+          message: `I've changed your ${widgetOfType.title} to display as a ${formatNames[newFormat]}. The visualization now better represents your data in the requested format.`,
+          widgetAction: {
+            type: 'format-change',
+            widgetId: widgetOfType.id,
+            newFormat: newFormat,
+            updateType: 'format'
+          }
+        };
+      }
+    }
 
     // Handle widget updates/edits
     if (action === 'update' && targetWidget) {
@@ -528,7 +651,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ activeTab = 'dashboard' }
 
     // Default helpful response
     return {
-      message: 'I can help you with portfolio information, add widgets to your dashboard, or modify existing widgets. Try asking me to "add a performance chart", "show me market trends", "change the performance chart to 3 months", or "remove the risk analysis widget".'
+      message: 'I can help you with portfolio information, add widgets to your dashboard, or modify existing widgets. Try asking me to:\n\n• "Add a performance chart"\n• "Show me market trends"\n• "Change performance chart to line chart"\n• "Convert asset allocation to table view"\n• "Show transactions as cards"\n• "Change the performance chart to 3 months"\n• "Remove the risk analysis widget"\n\nI can display data as bar charts, line charts, pie charts, tables, cards, or lists depending on the widget type.'
     };
   };
 
@@ -560,7 +683,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ activeTab = 'dashboard' }
       
       // Execute widget action if present
       if (response.widgetAction) {
-        const { type, widgetType, widgetId, widgetData } = response.widgetAction;
+        const { type, widgetType, widgetId, widgetData, newFormat } = response.widgetAction;
         
         if (type === 'add' && widgetType && widgetData) {
           const newWidget = {
@@ -570,11 +693,14 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ activeTab = 'dashboard' }
             h: widgetData.h || 3,
             x: 0,
             y: 0,
-            data: widgetData.data
+            data: widgetData.data,
+            visualizationFormat: widgetData.visualizationFormat
           };
           addWidget(newWidget);
         } else if (type === 'update' && widgetId && widgetData) {
           updateWidget(widgetId, widgetData);
+        } else if (type === 'format-change' && widgetId && newFormat) {
+          updateWidget(widgetId, { visualizationFormat: newFormat });
         } else if (type === 'remove' && widgetId) {
           removeWidget(widgetId);
         }

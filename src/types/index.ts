@@ -1,3 +1,5 @@
+export type VisualizationFormat = 'bar-chart' | 'line-chart' | 'pie-chart' | 'table' | 'cards' | 'list' | 'donut-chart' | 'area-chart';
+
 export interface Widget {
   id: string;
   type: 'portfolio-overview' | 'performance-chart' | 'asset-allocation' | 'recent-transactions' | 'news-feed' | 'market-trends' | 'risk-analysis' | 'cash-flow';
@@ -7,6 +9,14 @@ export interface Widget {
   w: number;
   h: number;
   data?: any;
+  visualizationFormat?: VisualizationFormat;
+  customFormatOptions?: {
+    showLegend?: boolean;
+    colors?: string[];
+    showLabels?: boolean;
+    compactView?: boolean;
+    showTrends?: boolean;
+  };
 }
 
 export interface ChatMessage {
@@ -19,11 +29,19 @@ export interface ChatMessage {
 }
 
 export interface WidgetAction {
-  type: 'add' | 'update' | 'remove';
+  type: 'add' | 'update' | 'remove' | 'format-change';
   widgetType?: Widget['type'];
   widgetId?: string;
   widgetData?: Partial<Widget>;
-  updateType?: 'data' | 'title' | 'size';
+  updateType?: 'data' | 'title' | 'size' | 'format' | 'options';
+  newFormat?: VisualizationFormat;
+  formatOptions?: {
+    showLegend?: boolean;
+    colors?: string[];
+    showLabels?: boolean;
+    compactView?: boolean;
+    showTrends?: boolean;
+  };
 }
 
 export interface DashboardLayout {
