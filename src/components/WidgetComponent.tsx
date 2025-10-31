@@ -342,7 +342,7 @@ const WidgetComponent: React.FC<WidgetComponentProps> = ({ widget, isCustomizing
   return (
     <>
       <div 
-        className={`h-full p-2 sm:p-4 bg-white rounded-lg relative transition-all duration-200 ${
+        className={`h-full bg-white rounded-lg relative transition-all duration-200 flex flex-col ${
           !isCustomizing ? 'cursor-pointer hover:shadow-lg hover:bg-gray-50 group' : ''
         }`}
         onClick={handleWidgetClick}
@@ -379,7 +379,7 @@ const WidgetComponent: React.FC<WidgetComponentProps> = ({ widget, isCustomizing
         </div>
 
         {/* Widget Header */}
-        <div className="flex items-center space-x-2 mb-2 sm:mb-4">
+        <div className="flex items-center space-x-2 p-2 sm:p-4 pb-2 flex-shrink-0">
           <div className="text-primary-600">
             {getIcon()}
           </div>
@@ -387,13 +387,15 @@ const WidgetComponent: React.FC<WidgetComponentProps> = ({ widget, isCustomizing
         </div>
 
         {/* Widget Content */}
-        <div className="h-full overflow-auto p-1">
-          {renderContent()}
+        <div className="flex-1 overflow-auto px-2 sm:px-4 pb-2 sm:pb-4 min-h-0">
+          <div className="pb-6">
+            {renderContent()}
+          </div>
         </div>
 
         {/* Hover Indicator */}
         {!isCustomizing && (
-          <div className="absolute bottom-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+          <div className="absolute bottom-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
             <div className="text-xs text-gray-500 bg-white px-2 py-1 rounded shadow-sm">
               Click for details
             </div>
