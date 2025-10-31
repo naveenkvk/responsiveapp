@@ -107,13 +107,14 @@ const FundDetailsModal: React.FC<FundDetailsModalProps> = ({ fund, isOpen, onClo
 
   return (
     <div 
-      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-[9999] overflow-hidden"
+      className="fixed inset-0 bg-black bg-opacity-50 z-[9999] overflow-y-auto"
       onClick={handleBackdropClick}
     >
-      <div 
-        className="bg-white rounded-xl shadow-xl max-w-6xl w-full max-h-[90vh] flex flex-col"
-        onClick={(e) => e.stopPropagation()}
-      >
+      <div className="flex items-center justify-center min-h-full p-4">
+        <div 
+          className="bg-white rounded-xl shadow-xl max-w-6xl w-full max-h-[95vh] flex flex-col my-8"
+          onClick={(e) => e.stopPropagation()}
+        >
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-200 flex-shrink-0">
           <div className="flex items-center space-x-4">
@@ -369,6 +370,7 @@ const FundDetailsModal: React.FC<FundDetailsModalProps> = ({ fund, isOpen, onClo
               </button>
             </div>
           </div>
+        </div>
         </div>
       </div>
     </div>

@@ -228,8 +228,9 @@ const AddWidgetModal: React.FC<AddWidgetModalProps> = ({ isOpen, onClose }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg max-w-4xl w-full max-h-[80vh] overflow-hidden">
+    <div className="fixed inset-0 bg-black bg-opacity-50 z-50 overflow-y-auto">
+      <div className="flex items-center justify-center min-h-full p-4">
+        <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-hidden my-8">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-200">
           <h2 className="text-xl font-semibold text-gray-900">Add Widget to Dashboard</h2>
@@ -307,6 +308,7 @@ const AddWidgetModal: React.FC<AddWidgetModalProps> = ({ isOpen, onClose }) => {
           >
             Cancel
           </button>
+        </div>
         </div>
       </div>
     </div>
