@@ -1,9 +1,10 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import GridLayout from 'react-grid-layout';
-import { Widget } from '../types';
+import { Widget, Fund } from '../types';
 import WidgetComponent from './WidgetComponent';
 import AddWidgetModal from './AddWidgetModal';
 import AIInsights from './AIInsights';
+import FundDetailsModal from './FundDetailsModal';
 import { Plus, Settings } from 'lucide-react';
 import { useDashboard } from '../context/DashboardContext';
 import 'react-grid-layout/css/styles.css';
@@ -15,7 +16,19 @@ const Dashboard: React.FC = () => {
   const [isCustomizing, setIsCustomizing] = useState(false);
   const [isAddWidgetModalOpen, setIsAddWidgetModalOpen] = useState(false);
   const [containerWidth, setContainerWidth] = useState(1200);
+  const [selectedFund, setSelectedFund] = useState<Fund | null>(null);
+  const [isFundModalOpen, setIsFundModalOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+
+  const handleFundClick = (fund: Fund) => {
+    setSelectedFund(fund);
+    setIsFundModalOpen(true);
+  };
+
+  const closeFundModal = () => {
+    setIsFundModalOpen(false);
+    setSelectedFund(null);
+  };
 // Add this useEffect to dynamically calculate container width
   useEffect(() => {
     const updateWidth = () => {
@@ -116,7 +129,11 @@ const Dashboard: React.FC = () => {
             >
               {widgets.map(widget => (
                 <div key={widget.id} className="bg-gray-50 rounded-lg border border-gray-200 overflow-hidden">
-                  <WidgetComponent widget={widget} isCustomizing={isCustomizing} />
+                  <WidgetComponent 
+                    widget={widget} 
+                    isCustomizing={isCustomizing}
+                    onFundClick={handleFundClick}
+                  />
                 </div>
               ))}
             </GridLayout>
@@ -131,6 +148,13 @@ const Dashboard: React.FC = () => {
       <AddWidgetModal
         isOpen={isAddWidgetModalOpen}
         onClose={() => setIsAddWidgetModalOpen(false)}
+      />
+
+      {/* Fund Details Modal */}
+      <FundDetailsModal
+        fund={selectedFund}
+        isOpen={isFundModalOpen}
+        onClose={closeFundModal}
       />
     </div>
   );
