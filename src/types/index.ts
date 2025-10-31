@@ -196,3 +196,53 @@ export interface CalendarReminder {
   isActive: boolean;
   notificationSent: boolean;
 }
+
+export interface Fund {
+  id: string;
+  name: string;
+  type: 'private-equity' | 'venture-capital' | 'real-estate' | 'hedge-fund' | 'credit' | 'infrastructure';
+  vintage: number; // year
+  status: 'active' | 'closed' | 'liquidating' | 'fully-realized';
+  strategy: string;
+  geography: string;
+  commitment: number; // total commitment amount
+  called: number; // called capital amount
+  distributed: number; // total distributions received
+  currentValue: number; // current NAV
+  irr: number; // internal rate of return
+  multiple: number; // total value multiple
+  fundSize: number; // total fund size
+  managementFee: number; // annual management fee percentage
+  carriedInterest: number; // carried interest percentage
+  preferredReturn: number; // preferred return percentage
+  generalPartner: string;
+  fundManager: string;
+  inception: Date;
+  termEnd?: Date;
+  description: string;
+  keyPersonnel: {
+    name: string;
+    role: string;
+    email?: string;
+  }[];
+  portfolioCompanies?: {
+    name: string;
+    sector: string;
+    investmentDate: Date;
+    investmentAmount: number;
+    currentValue: number;
+    status: 'active' | 'exited' | 'written-off';
+  }[];
+  recentActivity: {
+    date: Date;
+    type: 'capital-call' | 'distribution' | 'nav-update' | 'portfolio-update';
+    description: string;
+    amount?: number;
+  }[];
+  documents: {
+    type: 'quarterly-report' | 'annual-report' | 'capital-call-notice' | 'distribution-notice' | 'k1-tax-form';
+    name: string;
+    date: Date;
+    url?: string;
+  }[];
+}

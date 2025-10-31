@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
-import { Widget } from '../types';
-import { TrendingUp, TrendingDown, DollarSign, BarChart3, PieChart, Clock, Newspaper, AlertTriangle, Activity, X, ExternalLink, Calendar, MapPin, Users } from 'lucide-react';
+import { Widget, Fund } from '../types';
+import { TrendingUp, TrendingDown, DollarSign, BarChart3, PieChart, Clock, Newspaper, AlertTriangle, Activity, X, ExternalLink, Calendar, MapPin, Users, Building2 } from 'lucide-react';
 import { useDashboard } from '../context/DashboardContext';
 import WidgetDetailModal from './WidgetDetailModal';
+import FundDetailsModal from './FundDetailsModal';
+import { getFundByName } from '../data/fundData';
 
 interface WidgetComponentProps {
   widget: Widget;
@@ -12,6 +14,8 @@ interface WidgetComponentProps {
 const WidgetComponent: React.FC<WidgetComponentProps> = ({ widget, isCustomizing = false }) => {
   const { removeWidget } = useDashboard();
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+  const [selectedFund, setSelectedFund] = useState<Fund | null>(null);
+  const [isFundModalOpen, setIsFundModalOpen] = useState(false);
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
@@ -115,7 +119,19 @@ const WidgetComponent: React.FC<WidgetComponentProps> = ({ widget, isCustomizing
                   }`}></div>
                   <div>
                     <div className="text-sm font-medium text-gray-900">{transaction.type}</div>
-                    <div className="text-xs text-gray-600">{transaction.fund}</div>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        const fund = getFundByName(transaction.fund);
+                        if (fund) {
+                          setSelectedFund(fund);
+                          setIsFundModalOpen(true);
+                        }
+                      }}
+                      className="text-xs text-blue-600 hover:text-blue-800 underline hover:no-underline transition-colors"
+                    >
+                      {transaction.fund}
+                    </button>
                   </div>
                 </div>
                 <div className="text-right">
@@ -248,6 +264,24 @@ const WidgetComponent: React.FC<WidgetComponentProps> = ({ widget, isCustomizing
                           <span>{event.attendees.length}</span>
                         </div>
                       )}
+                      {event.fundName && (
+                        <div className="flex items-center space-x-1">
+                          <Building2 className="w-3 h-3" />
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              const fund = getFundByName(event.fundName);
+                              if (fund) {
+                                setSelectedFund(fund);
+                                setIsFundModalOpen(true);
+                              }
+                            }}
+                            className="text-blue-600 hover:text-blue-800 underline hover:no-underline transition-colors"
+                          >
+                            {event.fundName}
+                          </button>
+                        </div>
+                      )}
                     </div>
                   </div>
                   <span className={`px-2 py-1 text-xs rounded-full ${
@@ -372,6 +406,16 @@ const WidgetComponent: React.FC<WidgetComponentProps> = ({ widget, isCustomizing
         widget={widget}
         isOpen={isDetailModalOpen}
         onClose={() => setIsDetailModalOpen(false)}
+      />
+
+      {/* Fund Details Modal */}
+      <FundDetailsModal
+        fund={selectedFund}
+        isOpen={isFundModalOpen}
+        onClose={() => {
+          setIsFundModalOpen(false);
+          setSelectedFund(null);
+        }}
       />
     </>
   );
