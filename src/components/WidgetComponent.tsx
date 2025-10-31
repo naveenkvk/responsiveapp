@@ -404,6 +404,7 @@ const WidgetComponent: React.FC<WidgetComponentProps> = ({ widget, isCustomizing
         widget={widget}
         isOpen={isDetailModalOpen}
         onClose={() => setIsDetailModalOpen(false)}
+        onFundClick={onFundClick}
       />
     </>
   );

@@ -1,14 +1,16 @@
 import React, { useEffect } from 'react';
 import { X, TrendingUp, TrendingDown, DollarSign, Calendar, Building, User, AlertCircle, AlertTriangle, CheckCircle, Info } from 'lucide-react';
-import { Widget } from '../types';
+import { Widget, Fund } from '../types';
+import { getFundByName } from '../data/fundData';
 
 interface WidgetDetailModalProps {
   widget: Widget | null;
   isOpen: boolean;
   onClose: () => void;
+  onFundClick?: (fund: Fund) => void;
 }
 
-const WidgetDetailModal: React.FC<WidgetDetailModalProps> = ({ widget, isOpen, onClose }) => {
+const WidgetDetailModal: React.FC<WidgetDetailModalProps> = ({ widget, isOpen, onClose, onFundClick }) => {
   // Handle keyboard escape - must be before early return
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -116,7 +118,17 @@ const WidgetDetailModal: React.FC<WidgetDetailModalProps> = ({ widget, isOpen, o
                 {detailedBreakdown.map((fund, index) => (
                   <tr key={index} className="hover:bg-gray-50">
                     <td className="px-3 sm:px-6 py-4">
-                      <div className="font-medium text-gray-900 text-sm sm:text-base break-words">{fund.fund}</div>
+                      <button
+                        onClick={() => {
+                          const fundData = getFundByName(fund.fund);
+                          if (fundData && onFundClick) {
+                            onFundClick(fundData);
+                          }
+                        }}
+                        className="font-medium text-blue-600 hover:text-blue-800 underline hover:no-underline transition-colors text-sm sm:text-base break-words text-left"
+                      >
+                        {fund.fund}
+                      </button>
                     </td>
                     <td className="px-3 sm:px-6 py-4 text-sm text-gray-900 whitespace-nowrap">
                       {formatCurrency(fund.nav)}
@@ -314,7 +326,17 @@ const WidgetDetailModal: React.FC<WidgetDetailModalProps> = ({ widget, isOpen, o
                       <div className="flex items-center space-x-3">
                         <Building className="w-5 h-5 text-gray-400 flex-shrink-0" />
                         <div className="min-w-0">
-                          <p className="font-medium text-gray-900 text-sm sm:text-base break-words">{fund.name}</p>
+                          <button
+                            onClick={() => {
+                              const fundData = getFundByName(fund.name);
+                              if (fundData && onFundClick) {
+                                onFundClick(fundData);
+                              }
+                            }}
+                            className="font-medium text-blue-600 hover:text-blue-800 underline hover:no-underline transition-colors text-sm sm:text-base break-words text-left p-0"
+                          >
+                            {fund.name}
+                          </button>
                           <p className="text-sm text-gray-500">Vintage: {fund.vintage}</p>
                         </div>
                       </div>
@@ -423,7 +445,17 @@ const WidgetDetailModal: React.FC<WidgetDetailModalProps> = ({ widget, isOpen, o
                       </span>
                     </td>
                     <td className="px-3 sm:px-6 py-4 text-sm font-medium text-gray-900">
-                      <div className="max-w-[150px] break-words">{transaction.fund}</div>
+                      <button
+                        onClick={() => {
+                          const fundData = getFundByName(transaction.fund);
+                          if (fundData && onFundClick) {
+                            onFundClick(fundData);
+                          }
+                        }}
+                        className="max-w-[150px] break-words text-blue-600 hover:text-blue-800 underline hover:no-underline transition-colors text-left p-0"
+                      >
+                        {transaction.fund}
+                      </button>
                     </td>
                     <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm font-bold">
                       <span className={transaction.amount >= 0 ? 'text-green-600' : 'text-red-600'}>
